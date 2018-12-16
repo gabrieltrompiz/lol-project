@@ -1,3 +1,3 @@
 *React Native app using League of Legends API*
 
-This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
+This project was bootstrapped with [Expo-Cli](https://github.com/expo/expo-cli).
