@@ -1,7 +1,7 @@
 import React from 'react'
-import { Header } from 'react-native-elements'
+import { Header, Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import { Text, View, Alert } from 'react-native'
+import { Text } from 'react-native'
 
 export default class AppHeader extends React.Component {
     constructor(props) {
@@ -12,23 +12,41 @@ export default class AppHeader extends React.Component {
         if (this.props.showServer) {
             return (
                 <Header
-                    rightComponent={
-                        <Icon.Button
-                            name='menu-down-outline'
-                            backgroundColor='transparent'
-                            iconStyle={{ marginRight: 0 }}
+                    leftComponent={
+                        <Button
+                            title={this.props.server}
+                            icon={
+                                <Icon
+                                    name='menu-down-outline'
+                                    color='black'
+                                    size={15}
+                                />
+                            }
+                            iconRight
+                            titleStyle={{ color: 'black', fontSize: 18, fontWeight: '700' }}
+                            buttonStyle={{ backgroundColor: 'transparent' }}
                             server='LAN'
                             onPress={(e) => this.props.changeServer('LAN')}
                         >
-                            <Text style={{ color: 'white', fontSize: 18, fontWeight: '700' }}>{this.props.server}</Text>
-                        </Icon.Button>
+                            <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{this.props.server}</Text>
+                        </Button>
                     }
                     centerComponent={{
-                        text: 'League of Legends', style: { color: 'white', fontSize: 22, fontWeight: '700' }
+                        text: this.props.title, style: { color: 'black', fontSize: 22, fontWeight: '700' }
                     }}
+                    rightComponent={
+                        <Icon
+                            name='account-outline'
+                            color='black'
+                            size={22}
+                        />
+                    }
                     containerStyle={{
                         height: 100,
-                        backgroundColor: 'rgba(36, 41, 46, 1)'
+                        //backgroundColor: 'rgba(36, 41, 46, 1)'
+                        backgroundColor: 'white',
+                        borderBottomColor: '#EFEFF0',
+                        borderBottomWidth: 1
                     }}
                 />
             );
@@ -36,7 +54,7 @@ export default class AppHeader extends React.Component {
             return (
                 <Header
                     centerComponent={{
-                        text: 'League of Legends', style: { color: 'white', fontSize: 22, fontWeight: '700' }
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '700' }
                     }}
                     containerStyle={{
                         height: 100,

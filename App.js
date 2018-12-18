@@ -1,18 +1,23 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Platform, StatusBar, Dimensions } from 'react-native'
 import { AppLoading, Asset } from 'expo'
-import SearchView from './components/SearchView'
+import HomeScreen from './screens/HomeScreen'
 import AppHeader from './components/AppHeader'
+import SearchBar from './components/SearchBar';
 
 export default class App extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { isContentLoaded: false, server: 'NA' }
+    this.state = { isContentLoaded: false, server: 'NA', theme: 'dark', view: 'Home' }
   }
 
-  handleChangeServer = serverName => {
-    this.setState({ server: serverName })
+  handleChangeServer = server => {
+    this.setState({ server: server })
+  }
+
+  handleChangeView = view => {
+    this.setState({ view: view })
   }
 
   render() {
@@ -27,8 +32,9 @@ export default class App extends React.Component {
     } else {
       return (
         <View style={styles.container}>
-          <AppHeader server={this.state.server} changeServer={this.handleChangeServer} showServer={true} />
-          <SearchView />
+          {Platform.OS === 'ios' && this.state.theme === 'dark' && <StatusBar barStyle='dark-content' />}
+          <AppHeader server={this.state.server} changeServer={this.handleChangeServer} showServer={true} title="League of Legends" />
+          {this.state.view === 'Home' && <HomeScreen />}
         </View>
       );
     }
@@ -55,7 +61,10 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: 'white',
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height
   },
 });
