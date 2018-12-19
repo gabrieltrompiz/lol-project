@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TextInput, StyleSheet, Dimensions } from 'react-native'
+import { View, TextInput, StyleSheet, Dimensions, Keyboard } from 'react-native'
 import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -14,16 +14,8 @@ export default class SearchBar extends React.Component {
                 <TextInput
                     placeholder='Summoner Search'
                     placeholderTextColor='rgba(104, 104, 104, 0.6)'
-                    style={{
-                        fontSize: 20,
-                        fontWeight: '400',
-                        flex: 1,
-                        marginLeft: 20,
-                        backgroundColor: '#f7f7f7',
-                        height: 26,
-                        paddingLeft: 10,
-                        borderRadius: 5
-                    }}
+                    returnKeyType='search'
+                    style={styles.textInput}
                 />
                 <Button
                     icon={{
@@ -32,11 +24,8 @@ export default class SearchBar extends React.Component {
                         color: 'rgba(36, 41, 46, 1)'
                     }}
                     title=''
-                    buttonStyle={{
-                        backgroundColor: 'transparent',
-                        marginRight: 15
-                    }}
-                    onPress={() => console.log('helo')}
+                    buttonStyle={styles.button}
+                    onPress={() => Keyboard.dismiss()}
                 />
             </View>
         );
@@ -46,11 +35,28 @@ export default class SearchBar extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        marginTop: 15,
+        paddingTop: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#EFEFF0',
         paddingBottom: 15,
         width: Dimensions.get('window').width,
         alignItems: 'center',
+    },
+    textInput: {
+        fontSize: 20,
+        fontWeight: '400',
+        flex: 1,
+        marginLeft: 20,
+        backgroundColor: '#f7f7f7',
+        height: 36,
+        paddingLeft: 10,
+        borderRadius: 5,
+        marginRight: 5,
+    },
+    button: {
+        backgroundColor: 'transparent',
+        marginRight: 15,
+        elevation: 0,
+        borderRadius: 20
     }
 })

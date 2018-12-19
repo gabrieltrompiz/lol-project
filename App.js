@@ -4,12 +4,14 @@ import { AppLoading, Asset } from 'expo'
 import HomeScreen from './screens/HomeScreen'
 import AppHeader from './components/AppHeader'
 import SearchBar from './components/SearchBar';
+import NavBar from './components/NavBar';
+import SettingsScreen from './screens/SettingsScreen';
 
 export default class App extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { isContentLoaded: false, server: 'NA', theme: 'dark', view: 'Home' }
+    this.state = { isContentLoaded: false, server: 'NA', theme: '#24292E', view: 'Home' }
   }
 
   handleChangeServer = server => {
@@ -18,6 +20,10 @@ export default class App extends React.Component {
 
   handleChangeView = view => {
     this.setState({ view: view })
+  }
+
+  handleChangeTheme = theme => {
+    this.setState({ theme: theme })
   }
 
   render() {
@@ -32,9 +38,12 @@ export default class App extends React.Component {
     } else {
       return (
         <View style={styles.container}>
-          {Platform.OS === 'ios' && this.state.theme === 'dark' && <StatusBar barStyle='dark-content' />}
-          <AppHeader server={this.state.server} changeServer={this.handleChangeServer} showServer={true} title="League of Legends" />
+          {Platform.OS === 'ios' && <StatusBar barStyle='dark-content' />}
+          {this.state.view === 'Home' && <AppHeader server={this.state.server} changeServer={this.handleChangeServer} showServer={true} title='League of Legends' />}
           {this.state.view === 'Home' && <HomeScreen />}
+          {this.state.view === 'Settings' && <AppHeader server={this.state.server} changeServer={this.handleChangeServer} showServer={false} title='Settings' />}
+          {this.state.view === 'Settings' && <SettingsScreen />}
+          <NavBar theme={this.state.theme} changeTheme={this.handleChangeTheme} view={this.state.view} changeView={this.handleChangeView} />
         </View>
       );
     }

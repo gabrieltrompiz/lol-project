@@ -1,16 +1,14 @@
 import React from 'react'
-import { View, StyleSheet, Dimensions } from 'react-native'
-import SearchBar from '../components/SearchBar';
+import { View, Text, StyleSheet, Dimensions } from 'react-native'
 
-export default class HomeScreen extends React.Component {
-    constructor(props) {
+export default class SettingsScreen extends React.Component {
+    constructor(props){
         super(props)
     }
 
     render() {
-        return (
+        return(
             <View style={styles.container}>
-                <SearchBar />
 
             </View>
         );
