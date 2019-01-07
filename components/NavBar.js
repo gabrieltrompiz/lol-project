@@ -1,60 +1,78 @@
 import React from 'react'
-import { View, StyleSheet, Dimensions } from 'react-native'
+import { View, StyleSheet, Dimensions, Image, TouchableHighlight } from 'react-native'
 import { Button } from 'react-native-elements'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 export default class NavBar extends React.Component {
     constructor(props) {
         super(props)
     }
-
+    
     render() {
         return (
             <View style={styles.container}>
-                <Button
-                    icon={{
-                        name: this.props.view === 'Home' ? 'home' : 'home-outline',
-                        size: 30,
-                        color: this.props.theme,
-                        type: 'material-community'
-                    }}
-                    title=''
-                    buttonStyle= {styles.button}
+                <TouchableHighlight
+                    underlayColor={'transparent'}
+                    activeOpacity={0.5}
                     onPress={() => this.props.changeView('Home')}
-                />
-                <Button
-                    icon={{
-                        name: 'a',
-                        size: 30,
-                        color: this.props.theme,
-                        type: 'material-community'
-                    }}
-                    title=''
-                    buttonStyle={styles.button}
-                    onPress={() => this.props.changeView('Champions')}
-                />
-                <Button
-                    icon={{
-                        name: 'search',
-                        size: 30,
-                        color: this.props.theme,
-                        type: 'material-community'
-                    }}
-                    title=''
-                    buttonStyle={styles.button}
+                    style={styles.button}
+                >
+                    <Icon 
+                        name={this.props.view === 'Home' ? 'home' : 'home-outline'}
+                        size={30}
+                        color={this.props.theme}
+                        style={{
+                            marginTop: 14
+                        }}
+                    />
+                </TouchableHighlight>
+                <TouchableHighlight
+                    underlayColor={'transparent'}
+                    activeOpacity={0.5}
+                    onPress={() => this.props.changeView('Champs')}
+                    style={styles.button}
+                >
+                    <Image 
+                        source={this.props.view === 'Champs' ? require('../assets/champs-icon.png') : require('../assets/champs-icon-outline.png')}
+                        style={{
+                            width: 30,
+                            height: 30,
+                            tintColor: this.props.theme,
+                            marginTop: 14,
+                        }}
+                    />
+                </TouchableHighlight>
+                <TouchableHighlight
+                    underlayColor={'transparent'}
+                    activeOpacity={0.5}
                     onPress={() => this.props.changeView('Leaderboards')}
-                />
-                <Button
-                    icon={{
-                        name: this.props.view === 'Settings' ? 'settings' : 'settings-outline',
-                        size: 30,
-                        color: this.props.theme,
-                        type: 'material-community'
-                    }}
-                    title=''
-                    buttonStyle={styles.button}
+                    style={styles.button}
+                >
+                    <Icon
+                        name={this.props.view === 'Leaderboards' ? 'trophy' : 'trophy-outline'}
+                        size={30}
+                        color={this.props.theme}
+                        style={{
+                            marginTop: 14
+                        }}
+                    />
+                </TouchableHighlight>
+                 <TouchableHighlight
+                    underlayColor={'transparent'}
+                    activeOpacity={0.5}
                     onPress={() => this.props.changeView('Settings')}
-                />
+                    style={styles.button}
+                >
+                    <Icon 
+                        name={this.props.view === 'Settings' ? 'settings' : 'settings-outline'}
+                        size={30}
+                        color={this.props.theme}
+                        style={{
+                            marginTop: 14
+                        }}
+                    />
+                </TouchableHighlight>
             </View>
         );
     }

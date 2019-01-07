@@ -38,10 +38,14 @@ export default class App extends React.Component {
     } else {
       return (
         <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle='dark-content' />}
-          {this.state.view === 'Home' && <AppHeader server={this.state.server} changeServer={this.handleChangeServer} showServer={true} title='League of Legends' />}
+          {Platform.OS === 'ios' && <StatusBar barStyle='light-content' />}
+          {this.state.view === 'Home' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} showServer title='League of Legends' />}
           {this.state.view === 'Home' && <HomeScreen />}
-          {this.state.view === 'Settings' && <AppHeader server={this.state.server} changeServer={this.handleChangeServer} showServer={false} title='Settings' />}
+          {this.state.view === 'Champs' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Champions' />}
+          {this.state.view === 'Champs' && <SettingsScreen />}
+          {this.state.view === 'Leaderboards' && <AppHeader theme ={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Leaderboards' />}
+          {this.state.view === 'Leaderboards' && <SettingsScreen />}
+          {this.state.view === 'Settings' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Settings' />}
           {this.state.view === 'Settings' && <SettingsScreen />}
           <NavBar theme={this.state.theme} changeTheme={this.handleChangeTheme} view={this.state.view} changeView={this.handleChangeView} />
         </View>
@@ -54,6 +58,8 @@ export default class App extends React.Component {
       Asset.loadAsync([
         require('./assets/icon.png'),
         require('./assets/splash.png'),
+        require('./assets/champs-icon.png'),
+        require('./assets/champs-icon-outline.png')
       ]),
     ]);
   };
@@ -67,7 +73,6 @@ export default class App extends React.Component {
   }
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -77,3 +82,5 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height
   },
 });
+
+const apiKey = ''

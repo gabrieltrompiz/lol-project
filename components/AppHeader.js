@@ -18,12 +18,12 @@ export default class AppHeader extends React.Component {
                             icon={
                                 <Icon
                                     name='menu-down-outline'
-                                    color='black'
+                                    color='white'
                                     size={15}
                                 />
                             }
                             iconRight
-                            titleStyle={{ color: 'black', fontSize: 18, fontWeight: '700' }}
+                            titleStyle={{ color: 'white', fontSize: 18, fontWeight: '700' }}
                             buttonStyle={{ backgroundColor: 'transparent', elevation: 0 }}
                             onPress={() => this.props.changeServer('LAN')}
                         >
@@ -31,11 +31,11 @@ export default class AppHeader extends React.Component {
                         </Button>
                     }
                     centerComponent={{
-                        text: this.props.title, style: { color: 'black', fontSize: 22, fontWeight: '700' }
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '700' }
                     }}
                     containerStyle={{
                         height: 100,
-                        backgroundColor: 'white',
+                        backgroundColor: this.props.theme,
                         borderBottomColor: '#EFEFF0',
                         borderBottomWidth: 1
                     }}
@@ -45,11 +45,11 @@ export default class AppHeader extends React.Component {
             return (
                 <Header
                     centerComponent={{
-                        text: this.props.title, style: { color: 'black', fontSize: 22, fontWeight: '700' }
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '700' }
                     }}
                     containerStyle={{
                         height: 100,
-                        backgroundColor: 'white',
+                        backgroundColor: this.props.theme,
                         borderBottomColor: '#EFEFF0',
                         borderBottomWidth: 1
                     }}
