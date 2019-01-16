@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, StyleSheet, Dimensions } from 'react-native'
 import SearchBar from '../components/SearchBar';
+import LottieView from 'lottie-react-native'
 
 export default class HomeScreen extends React.Component {
     constructor(props) {
@@ -10,8 +11,7 @@ export default class HomeScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <SearchBar />
-
+                <SearchBar searchSummoner={this.props.searchSummoner}/>
             </View>
         );
     }

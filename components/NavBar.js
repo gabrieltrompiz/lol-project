@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
         borderTopColor: '#DFDFDF',
         borderTopWidth: 1,
         backgroundColor: 'white',
+        zIndex: -1,
         justifyContent: 'space-evenly',
         ...ifIphoneX({
             height: 84

@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 export default class SearchBar extends React.Component {
     constructor(props) {
         super(props)
+        this.state = { summonerName: '' }
     }
 
     render() {
@@ -15,7 +16,12 @@ export default class SearchBar extends React.Component {
                     placeholder='Summoner Search'
                     placeholderTextColor='rgba(104, 104, 104, 0.6)'
                     returnKeyType='search'
+                    onSubmitEditing={() => { 
+                        Keyboard.dismiss() 
+                        this.props.searchSummoner(this.state.summonerName)
+                    }}
                     style={styles.textInput}
+                    onChangeText={ (textInput) => this.setState({ summonerName: textInput })}
                 />
                 <Button
                     icon={{
@@ -25,7 +31,10 @@ export default class SearchBar extends React.Component {
                     }}
                     title=''
                     buttonStyle={styles.button}
-                    onPress={() => Keyboard.dismiss()}
+                    onPress={() => {
+                        Keyboard.dismiss()
+                        this.props.searchSummoner(this.state.summonerName)
+                    }}
                 />
             </View>
         );

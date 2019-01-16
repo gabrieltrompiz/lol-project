@@ -23,15 +23,15 @@ export default class AppHeader extends React.Component {
                                 />
                             }
                             iconRight
-                            titleStyle={{ color: 'white', fontSize: 18, fontWeight: '700' }}
+                            titleStyle={{ color: 'white', fontSize: 18, fontWeight: '500' }}
                             buttonStyle={{ backgroundColor: 'transparent', elevation: 0 }}
                             onPress={() => this.props.changeServer('LAN')}
                         >
-                            <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{this.props.server}</Text>
+                            <Text style={{ color: 'black', fontSize: 18, fontWeight: '500' }}>{this.props.server}</Text>
                         </Button>
                     }
                     centerComponent={{
-                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '700' }
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600' }
                     }}
                     containerStyle={{
                         height: 100,
@@ -45,7 +45,7 @@ export default class AppHeader extends React.Component {
             return (
                 <Header
                     centerComponent={{
-                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '700' }
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600' }
                     }}
                     containerStyle={{
                         height: 100,
