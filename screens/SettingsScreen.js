@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import AppHeader from '../components/AppHeader'
 
 export default class SettingsScreen extends React.Component {
     constructor(props){
@@ -9,7 +10,7 @@ export default class SettingsScreen extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-
+                <AppHeader theme='#24292E' title='Settings' />
             </View>
         );
     }

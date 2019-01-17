@@ -33,6 +33,20 @@ export default class AppHeader extends React.Component {
                     centerComponent={{
                         text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600' }
                     }}
+                    rightComponent={
+                        <Button 
+                            title=''
+                            icon={
+                                <Icon 
+                                    name='account'
+                                    color='white'
+                                    size={20}
+                                />
+                            }
+                            buttonStyle={{ backgroundColor: 'transparent', elevation: 0, right: 5 }}
+                            onPress={() => console.log('account')}
+                        />
+                    }
                     containerStyle={{
                         height: 100,
                         backgroundColor: this.props.theme,

@@ -15,7 +15,6 @@
     "htmlparser2": "^3.10.0",
     "lottie-react-native": "^2.5.11",
     "node-fetch": "^2.3.0",
-    "phantomjs": "^2.1.7",
     "puppeteer": "^1.11.0",
     "react": "16.5.0",
     "react-native": "0.57.1",
@@ -46,7 +45,7 @@
     "url": "git+https://github.com/gabrieltrompiz/lol-project.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gabriel Trompiz",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/gabrieltrompiz/lol-project/issues"

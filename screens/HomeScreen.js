@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, StyleSheet, Dimensions } from 'react-native'
 import SearchBar from '../components/SearchBar';
-import LottieView from 'lottie-react-native'
+import AppHeader from '../components/AppHeader'
 
 export default class HomeScreen extends React.Component {
     constructor(props) {
@@ -11,6 +11,8 @@ export default class HomeScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+                <AppHeader theme={this.props.screenProps.theme} title='League of Legends' 
+                showServer server={this.props.screenProps.server} changeServer={this.props.screenProps.changeServer}/>
                 <SearchBar searchSummoner={this.props.searchSummoner}/>
             </View>
         );

@@ -1,29 +1,24 @@
 import React from 'react';
-import { View, StyleSheet, Platform, StatusBar, Dimensions, Alert } from 'react-native'
+import { StyleSheet, Alert, Image } from 'react-native'
 import { AppLoading, Asset } from 'expo'
 import HomeScreen from './screens/HomeScreen'
-import AppHeader from './components/AppHeader'
-import NavBar from './components/NavBar';
 import SettingsScreen from './screens/SettingsScreen';
 import * as firebase from 'firebase'
 import 'firebase/firestore'
-import 'firebase/functions' //TODO: Move this to ChampionsScreen.js
 import LoadingScreen from './screens/LoadingScreen'; //TODO: IMPLEMENT REACT-NAVIGATION!!!
+import { createBottomTabNavigator, createAppContainer } from 'react-navigation'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 export default class App extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { isContentLoaded: false, server: 'NA', theme: '#24292E', view: 'Home', loading: false }
+    this.state = { isContentLoaded: false, server: 'NA', theme: '#24292E' }
     this.searchSummoner = this.searchSummoner.bind(this)
   }
 
   handleChangeServer = server => {
     this.setState({ server: server })
-  }
-
-  handleChangeView = view => {
-    this.setState({ view: view })
   }
 
   handleChangeTheme = theme => {
@@ -41,19 +36,12 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle='light-content' />}
-          {this.state.view === 'Home' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} showServer title='League of Legends' />}
-          {this.state.view === 'Home' && <HomeScreen searchSummoner={this.searchSummoner} />}
-          {this.state.view === 'Champs' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Champions' />}
-          {this.state.view === 'Champs' && <SettingsScreen />}
-          {this.state.view === 'Leaderboards' && <AppHeader theme ={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Leaderboards' />}
-          {this.state.view === 'Leaderboards' && <SettingsScreen />}
-          {this.state.view === 'Settings' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Settings' />}
-          {this.state.view === 'Settings' && <SettingsScreen />}
-          {this.state.loading && <LoadingScreen />} 
-          <NavBar theme={this.state.theme} changeTheme={this.handleChangeTheme} view={this.state.view} changeView={this.handleChangeView} />
-        </View>
+        <AppContainer screenProps={{
+          theme: this.state.theme,
+          changeTheme: this.handleChangeTheme,
+          server: this.state.server,
+          changeServer: this.handleChangeServer
+        }}/>
       );
     }
   }
@@ -146,19 +134,11 @@ export default class App extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'white',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height
-  },
-});
+const CONFIG = require('./config.json') // File that contains API keys and sensitive information (included in .gitignore)
 
 const riotApiKey = CONFIG.riotApiKey //Permanent Riot API key
 
-const config = {
+const config = { // Firebase config
   apiKey: CONFIG.apiKey,
   authDomain: CONFIG.authDomain,
   databaseURL: CONFIG.databaseURL,
@@ -167,4 +147,52 @@ const config = {
   messagingSenderId: CONFIG.messagingSenderId
 };
 
-const CONFIG = require('./config.json')
+const TabNav = createBottomTabNavigator({ // tabnav component with screens
+  Home: HomeScreen,
+  Champions: SettingsScreen,
+  Leaderboards: SettingsScreen, 
+  Settings: SettingsScreen
+},
+{
+  initialRouteName: 'Home',
+  tabBarOptions: {
+    activeTintColor: '#24292E',
+    labelStyle: { fontWeight: '600', top: 1 }
+  },
+  defaultNavigationOptions: ({ navigation }) => ({
+    tabBarIcon: ({ focused, horizontal, tintColor }) => {
+      const { routeName } = navigation.state
+      let iconName;
+      switch(routeName) {
+        case 'Home': iconName = focused ? 'home' : 'home-outline'; break;
+        case 'Leaderboards' : iconName = focused ? 'trophy' : 'trophy-outline'; break;
+        case 'Settings': iconName = focused ? 'settings' : 'settings-outline'; break;
+      }
+      if(routeName === 'Champions') {
+        return <Image 
+          source={focused ? require('./assets/champs-icon.png') : require('./assets/champs-icon-outline.png')} 
+          style={{
+            width: 28,
+            height: 28,
+            bottom: 5,
+            tintColor: tintColor,
+            marginTop: 14,
+          }}
+        />
+      }
+      return <Icon name={iconName} size={28} color={tintColor} style={{ top: 5 }}/>
+    }
+  })
+})
+
+const AppContainer = createAppContainer(TabNav) // react-navigation app container for tab nav
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: 'white',
+    height: 62,
+    paddingLeft: 15,
+    paddingRight: 15,
+    elevation: 0
+  }
+})
