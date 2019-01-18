@@ -1,33 +1,41 @@
 import React from 'react';
-import { View, StyleSheet, Platform, StatusBar, Dimensions, Alert } from 'react-native'
-import { AppLoading, Asset } from 'expo'
-import HomeScreen from './screens/HomeScreen'
-import AppHeader from './components/AppHeader'
-import NavBar from './components/NavBar';
-import SettingsScreen from './screens/SettingsScreen';
+import { StyleSheet, Alert, Image, View, Dimensions, Platform, StatusBar, AsyncStorage } from 'react-native'
+import { AppLoading, Asset, Font } from 'expo'
 import * as firebase from 'firebase'
 import 'firebase/firestore'
-import 'firebase/functions' //TODO: Move this to ChampionsScreen.js
-import LoadingScreen from './screens/LoadingScreen'; //TODO: IMPLEMENT REACT-NAVIGATION!!!
+import LoadingScreen from './screens/LoadingScreen';
+import AppContainer from './components/AppContainer'
+import { Root } from 'native-base'
 
 export default class App extends React.Component {
-
   constructor(props) {
     super(props)
-    this.state = { isContentLoaded: false, server: 'NA', theme: '#24292E', view: 'Home', loading: false }
+    this.state = { isContentLoaded: false, server: 'NA', theme: '#24292E', loading: false } // Default state
     this.searchSummoner = this.searchSummoner.bind(this)
+    this._retrieveState() // Looks for state in AsyncStorage, if null will use default state
   }
+
+  _retrieveState = async () => {
+    const server = await AsyncStorage.getItem('SERVER')
+    const theme = await AsyncStorage.getItem('THEME')
+    if(server !== null) { this.setState({ server: server }) }
+    else { AsyncStorage.setItem('SERVER', this.state.server) } // Loads default state to AsyncStorage
+    if(theme !== null) { this.setState({ theme: theme }) } 
+    else { AsyncStorage.setItem('THEME', this.state.theme) } // Loads default state to AsyncStorage
+  } 
 
   handleChangeServer = server => {
     this.setState({ server: server })
-  }
-
-  handleChangeView = view => {
-    this.setState({ view: view })
+    AsyncStorage.setItem('SERVER', server) // Saves new state to  AsyncStorage
   }
 
   handleChangeTheme = theme => {
     this.setState({ theme: theme })
+    AsyncStorage.setItem('THEME', theme) // Saves new state to AsyncStorage
+  }
+
+  handleChangeLoading = loading => {
+    this.setState({ loading: loading })
   }
 
   render() {
@@ -41,19 +49,20 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle='light-content' />}
-          {this.state.view === 'Home' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} showServer title='League of Legends' />}
-          {this.state.view === 'Home' && <HomeScreen searchSummoner={this.searchSummoner} />}
-          {this.state.view === 'Champs' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Champions' />}
-          {this.state.view === 'Champs' && <SettingsScreen />}
-          {this.state.view === 'Leaderboards' && <AppHeader theme ={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Leaderboards' />}
-          {this.state.view === 'Leaderboards' && <SettingsScreen />}
-          {this.state.view === 'Settings' && <AppHeader theme={this.state.theme} server={this.state.server} changeServer={this.handleChangeServer} title='Settings' />}
-          {this.state.view === 'Settings' && <SettingsScreen />}
-          {this.state.loading && <LoadingScreen />} 
-          <NavBar theme={this.state.theme} changeTheme={this.handleChangeTheme} view={this.state.view} changeView={this.handleChangeView} />
-        </View>
+        <Root style={{backgroundColor: 'transparent'}}>
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar barStyle='light-content'/>}
+            <AppContainer screenProps={{
+              theme: this.state.theme,
+              changeTheme: this.handleChangeTheme,
+              server: this.state.server,
+              changeServer: this.handleChangeServer,
+              searchSummoner: this.searchSummoner,
+              setLoading: this.handleChangeLoading
+            }}/>
+            {this.state.loading && <LoadingScreen />}
+          </View>
+        </Root>
       );
     }
   }
@@ -65,7 +74,7 @@ export default class App extends React.Component {
         require('./assets/splash.png'),
         require('./assets/champs-icon.png'),
         require('./assets/champs-icon-outline.png')
-      ]),
+      ])
     ]);
   };
 
@@ -77,7 +86,7 @@ export default class App extends React.Component {
     this.setState({ isContentLoaded: true })
   }
 
-  searchSummoner(summonerName) {
+  searchSummoner(summonerName) { //FIXME: do TODOs!!! Data will go to SummonerScreen (StackNavigator, probably will use Fluid Transitions)
     const firestore = !firebase.apps.length ? firebase.initializeApp(config).firestore() : firebase.app().firestore();
     firestore.settings({ timestampsInSnapshots: true })
     if(summonerName !== '') {
@@ -97,7 +106,7 @@ export default class App extends React.Component {
             case 'KR': endpoint = 'kr'; break;
             case 'BR': endpoint = 'br1'; break;
             case 'RU': endpoint = 'ru'; break;
-            case 'OC': endpoint = 'oc1'; break;
+            case 'OCE': endpoint = 'oc1'; break;
             case 'JP': endpoint = 'jp1'; break;
             case 'EUN': endpoint = 'eun1'; break;
             case 'EUW': endpoint = 'euw1'; break;
@@ -121,12 +130,12 @@ export default class App extends React.Component {
                   this.setState({ loading: false })
                 })
                 .catch(err => {
-                  console.log('Firebase error: ' + err)
+                  console.log('Firebase error: ' + err) //TODO: Probably will show alert here
                   this.setState({ loading: false })
                 })
               })
             }
-            else if(response.status === 404) {
+            else if(response.status === 404) { //TODO: Probably will have to consider rest of HTTP status codes
               Alert.alert(
                 'Summoner not found',
                 'Please check the summoner name and the server.',
@@ -146,19 +155,11 @@ export default class App extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'white',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height
-  },
-});
+const CONFIG = require('./config.json') // File that contains API keys and sensitive information (included in .gitignore)
 
 const riotApiKey = CONFIG.riotApiKey //Permanent Riot API key
 
-const config = {
+const config = { // Firebase config
   apiKey: CONFIG.apiKey,
   authDomain: CONFIG.authDomain,
   databaseURL: CONFIG.databaseURL,
@@ -167,4 +168,10 @@ const config = {
   messagingSenderId: CONFIG.messagingSenderId
 };
 
-const CONFIG = require('./config.json')
+const styles = StyleSheet.create({
+  container: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+    backgroundColor: 'transparent'
+  }
+})

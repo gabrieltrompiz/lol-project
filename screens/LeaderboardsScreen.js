@@ -2,15 +2,15 @@ import React from 'react'
 import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import AppHeader from '../components/AppHeader'
 
-export default class SettingsScreen extends React.Component {
-    constructor(props){
+export default class LeaderboardsScreen extends React.Component {
+    constructor(props) {
         super(props)
     }
 
     render() {
-        return(
+        return (
             <View style={styles.container}>
-                <AppHeader theme={this.props.screenProps.theme} title='Settings' />
+                <AppHeader theme={this.props.screenProps.theme} title='Leaderboards' />
             </View>
         );
     }
