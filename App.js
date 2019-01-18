@@ -1,28 +1,41 @@
 import React from 'react';
-import { StyleSheet, Alert, Image } from 'react-native'
-import { AppLoading, Asset } from 'expo'
-import HomeScreen from './screens/HomeScreen'
-import SettingsScreen from './screens/SettingsScreen';
+import { StyleSheet, Alert, Image, View, Dimensions, Platform, StatusBar, AsyncStorage } from 'react-native'
+import { AppLoading, Asset, Font } from 'expo'
 import * as firebase from 'firebase'
 import 'firebase/firestore'
-import LoadingScreen from './screens/LoadingScreen'; //TODO: IMPLEMENT REACT-NAVIGATION!!!
-import { createBottomTabNavigator, createAppContainer } from 'react-navigation'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import LoadingScreen from './screens/LoadingScreen';
+import AppContainer from './components/AppContainer'
+import { Root } from 'native-base'
 
 export default class App extends React.Component {
-
   constructor(props) {
     super(props)
-    this.state = { isContentLoaded: false, server: 'NA', theme: '#24292E' }
+    this.state = { isContentLoaded: false, server: 'NA', theme: '#24292E', loading: false } // Default state
     this.searchSummoner = this.searchSummoner.bind(this)
+    this._retrieveState() // Looks for state in AsyncStorage, if null will use default state
   }
+
+  _retrieveState = async () => {
+    const server = await AsyncStorage.getItem('SERVER')
+    const theme = await AsyncStorage.getItem('THEME')
+    if(server !== null) { this.setState({ server: server }) }
+    else { AsyncStorage.setItem('SERVER', this.state.server) } // Loads default state to AsyncStorage
+    if(theme !== null) { this.setState({ theme: theme }) } 
+    else { AsyncStorage.setItem('THEME', this.state.theme) } // Loads default state to AsyncStorage
+  } 
 
   handleChangeServer = server => {
     this.setState({ server: server })
+    AsyncStorage.setItem('SERVER', server) // Saves new state to  AsyncStorage
   }
 
   handleChangeTheme = theme => {
     this.setState({ theme: theme })
+    AsyncStorage.setItem('THEME', theme) // Saves new state to AsyncStorage
+  }
+
+  handleChangeLoading = loading => {
+    this.setState({ loading: loading })
   }
 
   render() {
@@ -36,12 +49,20 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <AppContainer screenProps={{
-          theme: this.state.theme,
-          changeTheme: this.handleChangeTheme,
-          server: this.state.server,
-          changeServer: this.handleChangeServer
-        }}/>
+        <Root style={{backgroundColor: 'transparent'}}>
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar barStyle='light-content'/>}
+            <AppContainer screenProps={{
+              theme: this.state.theme,
+              changeTheme: this.handleChangeTheme,
+              server: this.state.server,
+              changeServer: this.handleChangeServer,
+              searchSummoner: this.searchSummoner,
+              setLoading: this.handleChangeLoading
+            }}/>
+            {this.state.loading && <LoadingScreen />}
+          </View>
+        </Root>
       );
     }
   }
@@ -53,7 +74,7 @@ export default class App extends React.Component {
         require('./assets/splash.png'),
         require('./assets/champs-icon.png'),
         require('./assets/champs-icon-outline.png')
-      ]),
+      ])
     ]);
   };
 
@@ -65,7 +86,7 @@ export default class App extends React.Component {
     this.setState({ isContentLoaded: true })
   }
 
-  searchSummoner(summonerName) {
+  searchSummoner(summonerName) { //FIXME: do TODOs!!! Data will go to SummonerScreen (StackNavigator, probably will use Fluid Transitions)
     const firestore = !firebase.apps.length ? firebase.initializeApp(config).firestore() : firebase.app().firestore();
     firestore.settings({ timestampsInSnapshots: true })
     if(summonerName !== '') {
@@ -85,7 +106,7 @@ export default class App extends React.Component {
             case 'KR': endpoint = 'kr'; break;
             case 'BR': endpoint = 'br1'; break;
             case 'RU': endpoint = 'ru'; break;
-            case 'OC': endpoint = 'oc1'; break;
+            case 'OCE': endpoint = 'oc1'; break;
             case 'JP': endpoint = 'jp1'; break;
             case 'EUN': endpoint = 'eun1'; break;
             case 'EUW': endpoint = 'euw1'; break;
@@ -109,12 +130,12 @@ export default class App extends React.Component {
                   this.setState({ loading: false })
                 })
                 .catch(err => {
-                  console.log('Firebase error: ' + err)
+                  console.log('Firebase error: ' + err) //TODO: Probably will show alert here
                   this.setState({ loading: false })
                 })
               })
             }
-            else if(response.status === 404) {
+            else if(response.status === 404) { //TODO: Probably will have to consider rest of HTTP status codes
               Alert.alert(
                 'Summoner not found',
                 'Please check the summoner name and the server.',
@@ -147,52 +168,10 @@ const config = { // Firebase config
   messagingSenderId: CONFIG.messagingSenderId
 };
 
-const TabNav = createBottomTabNavigator({ // tabnav component with screens
-  Home: HomeScreen,
-  Champions: SettingsScreen,
-  Leaderboards: SettingsScreen, 
-  Settings: SettingsScreen
-},
-{
-  initialRouteName: 'Home',
-  tabBarOptions: {
-    activeTintColor: '#24292E',
-    labelStyle: { fontWeight: '600', top: 1 }
-  },
-  defaultNavigationOptions: ({ navigation }) => ({
-    tabBarIcon: ({ focused, horizontal, tintColor }) => {
-      const { routeName } = navigation.state
-      let iconName;
-      switch(routeName) {
-        case 'Home': iconName = focused ? 'home' : 'home-outline'; break;
-        case 'Leaderboards' : iconName = focused ? 'trophy' : 'trophy-outline'; break;
-        case 'Settings': iconName = focused ? 'settings' : 'settings-outline'; break;
-      }
-      if(routeName === 'Champions') {
-        return <Image 
-          source={focused ? require('./assets/champs-icon.png') : require('./assets/champs-icon-outline.png')} 
-          style={{
-            width: 28,
-            height: 28,
-            bottom: 5,
-            tintColor: tintColor,
-            marginTop: 14,
-          }}
-        />
-      }
-      return <Icon name={iconName} size={28} color={tintColor} style={{ top: 5 }}/>
-    }
-  })
-})
-
-const AppContainer = createAppContainer(TabNav) // react-navigation app container for tab nav
-
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: 'white',
-    height: 62,
-    paddingLeft: 15,
-    paddingRight: 15,
-    elevation: 0
+  container: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+    backgroundColor: 'transparent'
   }
 })
