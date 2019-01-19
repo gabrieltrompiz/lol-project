@@ -1,8 +1,7 @@
 import React from 'react'
-import { createAppContainer, createBottomTabNavigator } from 'react-navigation'
+import { createAppContainer, createBottomTabNavigator, createStackNavigator } from 'react-navigation'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Image } from 'react-native'
-import { FluidNavigator } from 'react-navigation-fluid-transitions'
 import HomeScreen from '../screens/HomeScreen'
 import SettingsScreen from '../screens/SettingsScreen'
 import ChampsScreen from '../screens/ChampsScreen'
@@ -15,30 +14,31 @@ export default class AppContainer extends React.Component {
     }
 
     render() {
-        const HomeStack = FluidNavigator({ // HomeScreen stack navigator
-            Home: { screen: HomeScreen },
-            Summoner: { screen: SummonerScreen }
-        })
-        const ChampsStack = FluidNavigator({
-            Champions: { screen: ChampsScreen }
-        })
-        const LeaderboardsStack = FluidNavigator({
-            Leaderboards: { screen: LeaderboardsScreen }
-        })
-        const SettingsStack = FluidNavigator({
-            Settings: { screen: SettingsScreen }
-        })
-        const TabNav = createBottomTabNavigator({ // tabnav component with screens
+        const HomeStack = createStackNavigator({ // HomeScreen stack navigator
             Home: HomeScreen,
-            Champions: ChampsScreen,
-            Leaderboards: LeaderboardsScreen,
+            Summoner: SummonerScreen
+        }, { headerMode: 'none' })
+        const ChampsStack = createStackNavigator({
+            Champions: ChampsScreen
+        }, { headerMode: 'none' })
+        const LeaderboardsStack = createStackNavigator({
+            Leaderboards: LeaderboardsScreen 
+        }, { headerMode: 'none' })
+        const SettingsStack = createStackNavigator({
             Settings: SettingsScreen
+        }, { headerMode: 'none' })
+        const TabNav = createBottomTabNavigator({ // tabnav component with screens
+            Home: HomeStack,
+            Champions: ChampsStack,
+            Leaderboards: LeaderboardsStack,
+            Settings: SettingsStack
         },
         {
             initialRouteName: 'Home',
             tabBarOptions: {
                 activeTintColor: this.props.screenProps.theme,
                 labelStyle: { fontWeight: '600', top: 1 },
+                
             },
             defaultNavigationOptions: ({ navigation }) => ({
                 tabBarIcon: ({ focused, horizontal, tintColor }) => {

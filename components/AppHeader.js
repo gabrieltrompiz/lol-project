@@ -52,7 +52,7 @@ export default class AppHeader extends React.Component {
                                 />
                             }
                             buttonStyle={{ backgroundColor: 'transparent', elevation: 0, right: 5 }}
-                            onPress={() => this.props.changeTheme('#BF360C')}
+                            // onPress={() => this.props.changeTheme('#24292E')}
                         />
                     }
                     containerStyle={{

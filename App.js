@@ -5,7 +5,6 @@ import * as firebase from 'firebase'
 import 'firebase/firestore'
 import LoadingScreen from './screens/LoadingScreen';
 import AppContainer from './components/AppContainer'
-import { Root } from 'native-base'
 
 export default class App extends React.Component {
   constructor(props) {
@@ -49,20 +48,18 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <Root style={{backgroundColor: 'transparent'}}>
-          <View style={styles.container}>
-            {Platform.OS === 'ios' && <StatusBar barStyle='light-content'/>}
-            <AppContainer screenProps={{
-              theme: this.state.theme,
-              changeTheme: this.handleChangeTheme,
-              server: this.state.server,
-              changeServer: this.handleChangeServer,
-              searchSummoner: this.searchSummoner,
-              setLoading: this.handleChangeLoading
-            }}/>
-            {this.state.loading && <LoadingScreen />}
-          </View>
-        </Root>
+        <View style={styles.container}>
+          {Platform.OS === 'ios' && <StatusBar barStyle='light-content'/>}
+          <AppContainer screenProps={{
+            theme: this.state.theme,
+            changeTheme: this.handleChangeTheme,
+            server: this.state.server,
+            changeServer: this.handleChangeServer,
+            searchSummoner: this.searchSummoner,
+            setLoading: this.handleChangeLoading
+          }}/>
+          {this.state.loading && <LoadingScreen />}
+        </View>
       );
     }
   }
@@ -74,7 +71,8 @@ export default class App extends React.Component {
         require('./assets/splash.png'),
         require('./assets/champs-icon.png'),
         require('./assets/champs-icon-outline.png')
-      ])
+      ]),
+      Font.loadAsync({'roboto': require('./assets/Roboto-Medium.ttf')})
     ]);
   };
 
@@ -87,71 +85,55 @@ export default class App extends React.Component {
   }
 
   searchSummoner(summonerName) { //FIXME: do TODOs!!! Data will go to SummonerScreen (StackNavigator, probably will use Fluid Transitions)
-    const firestore = !firebase.apps.length ? firebase.initializeApp(config).firestore() : firebase.app().firestore();
-    firestore.settings({ timestampsInSnapshots: true })
-    if(summonerName !== '') {
-      this.setState({ loading: true })
-      let firestoreCollection = firestore.collection('users-' + this.state.server.toLowerCase())
-      firestoreCollection.doc(summonerName.toLowerCase()).get().then(doc => {
-        if(doc.exists) { //TODO: Display data of doc
-          console.log(doc.data())
-          this.setState({ loading: false })
-        }
-        else { //TODO: Display data after adding doc to Firestore
-          let endpoint;
-          switch(this.state.server) {
-            case 'NA': endpoint = 'na1'; break;
-            case 'LAN': endpoint = 'la1'; break;
-            case 'LAS': endpoint = 'la2'; break;
-            case 'KR': endpoint = 'kr'; break;
-            case 'BR': endpoint = 'br1'; break;
-            case 'RU': endpoint = 'ru'; break;
-            case 'OCE': endpoint = 'oc1'; break;
-            case 'JP': endpoint = 'jp1'; break;
-            case 'EUN': endpoint = 'eun1'; break;
-            case 'EUW': endpoint = 'euw1'; break;
-            case 'TR': endpoint = 'tr1'; break;
+    return new Promise((resolve, reject) => {
+      const firestore = !firebase.apps.length ? firebase.initializeApp(config).firestore() : firebase.app().firestore();
+      if (summonerName !== '') {
+        let firestoreCollection = firestore.collection('users-' + this.state.server.toLowerCase())
+        firestoreCollection.doc(summonerName.toLowerCase()).get().then(doc => {
+          if (doc.exists) {
+            resolve(doc.data())
           }
-          fetch('https://' + endpoint + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURI(summonerName) + '?api_key='  + riotApiKey, 
-            { headers: { "X-Riot-Token": riotApiKey, "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8", "Accept-Language": "en-US,en;q=0.9" } })
-          .then(response => {
-            if(response.status === 200) {
-              response.json().then(data => {
-                firestoreCollection.doc(summonerName.toLowerCase()).set({
-                  accountId: data.accountId,
-                  id: data.id,
-                  profileIconId: data.profileIconId,
-                  puuid: data.puuid,
-                  revisionDate: data.revisionDate,
-                  summonerLevel: data.summonerLevel
-                })
-                .then(() => { 
-                  console.log('Added ' + summonerName + ' to Firestore successfully')
-                  this.setState({ loading: false })
-                })
-                .catch(err => {
-                  console.log('Firebase error: ' + err) //TODO: Probably will show alert here
-                  this.setState({ loading: false })
-                })
+          else {
+            let endpoint;
+            switch (this.state.server) {
+              case 'NA': endpoint = 'na1'; break;
+              case 'LAN': endpoint = 'la1'; break;
+              case 'LAS': endpoint = 'la2'; break;
+              case 'KR': endpoint = 'kr'; break;
+              case 'BR': endpoint = 'br1'; break;
+              case 'RU': endpoint = 'ru'; break;
+              case 'OCE': endpoint = 'oc1'; break;
+              case 'JP': endpoint = 'jp1'; break;
+              case 'EUN': endpoint = 'eun1'; break;
+              case 'EUW': endpoint = 'euw1'; break;
+              case 'TR': endpoint = 'tr1'; break;
+            }
+            fetch('https://' + endpoint + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURI(summonerName) + '?api_key=' + riotApiKey,
+              { headers: { "X-Riot-Token": riotApiKey, "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8", "Accept-Language": "en-US,en;q=0.9" } })
+              .then(response => {
+                if (response.status === 200) {
+                  response.json().then(data => {
+                    firestoreCollection.doc(summonerName.toLowerCase()).set({
+                      accountId: data.accountId,
+                      id: data.id,
+                      profileIconId: data.profileIconId,
+                      puuid: data.puuid,
+                      revisionDate: data.revisionDate,
+                      summonerLevel: data.summonerLevel
+                    })
+                    .then(() => resolve(data))
+                    .catch(err => reject('Firebase Error:' + err))
+                  })
+                }
+                else if (response.status === 404) { //TODO: Probably will have to consider rest of HTTP status codes
+                  reject("Summoner not found")
+                }
               })
-            }
-            else if(response.status === 404) { //TODO: Probably will have to consider rest of HTTP status codes
-              Alert.alert(
-                'Summoner not found',
-                'Please check the summoner name and the server.',
-                {text: 'OK'},
-                { cancelable: false }
-              )
-              this.setState({ loading: false })
-            }
-          })
-          .catch(err => { //TODO: Probably will show alert here 
-            console.log('Fetch error: ' + err)
-            this.setState({ loading: false })
-          })
-        } // End of else
-      }) // End of doc
-    } // End of if
+              .catch(err => reject("Fetch error: " + err))// TODO: Show alert here
+          } // End of else
+        }) // End of doc
+      } // End of if
+    })
   }
 }
 

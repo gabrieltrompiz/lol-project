@@ -1,24 +1,38 @@
 import React from 'react'
-import { View, TextInput, StyleSheet, Dimensions, Keyboard } from 'react-native'
+import { View, TextInput, StyleSheet, Dimensions, Keyboard, Alert } from 'react-native'
 import { Button } from 'react-native-elements'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import LoadingScreen from '../screens/LoadingScreen';
 
 export default class SearchBar extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { summonerName: '' }
+        this.state = { summonerName: '', loading: false }
     }
 
     render() {
         return (
             <View style={styles.container}>
+                {this.state.loading && <LoadingScreen />}
                 <TextInput
                     placeholder='Summoner Search'
-                    placeholderTextColor='rgba(104, 104, 104, 0.6)'
+                    placeholderTextColor='#97A0A7'
                     returnKeyType='search'
-                    onSubmitEditing={() => { 
-                        Keyboard.dismiss() 
-                        this.props.searchSummoner(this.state.summonerName)
+                    onSubmitEditing={async () => { 
+                        Keyboard.dismiss()
+                        this.setState({ loading: true })
+                        this.props.searchSummoner(this.state.summonerName).then((data) => {
+                            this.setState({ loading: false }) 
+                            this.props.navigation.navigate('Summoner', { data: data }) // Data will be sent from here
+                        }, (reason) => {
+                            this.setState({ loading: false })
+                            setTimeout(() => {
+                                Alert.alert(
+                                    'Summoner not found',
+                                    'Please check the summoner name and the server.',
+                                    { text: 'OK' },
+                                    { cancelable: false } )
+                            }, 50) // React Native workaround (bug with Modal and Alert)
+                        })
                     }}
                     style={styles.textInput}
                     onChangeText={ (textInput) => this.setState({ summonerName: textInput })}
@@ -26,14 +40,27 @@ export default class SearchBar extends React.Component {
                 <Button
                     icon={{
                         name: 'search',
-                        size: 25,
+                        size: 26,
                         color: 'rgba(36, 41, 46, 1)'
                     }}
                     title=''
                     buttonStyle={styles.button}
-                    onPress={() => {
+                    onPress={async () => {
                         Keyboard.dismiss()
-                        this.props.searchSummoner(this.state.summonerName)
+                        this.setState({ loading: true })
+                        this.props.searchSummoner(this.state.summonerName).then((data) => {
+                            this.setState({ loading: false })
+                            this.props.navigation.navigate('Summoner',  { data: data })
+                        }, (reason) => {
+                            this.setState({ loading: false })
+                            setTimeout(() => {
+                                Alert.alert(
+                                    'Summoner not found',
+                                    'Please check the summoner name and the server.',
+                                    { text: 'OK' },
+                                    { cancelable: false })
+                            }, 50) // React Native workaround (bug with Modal and Alert)
+                        })
                     }}
                 />
             </View>
@@ -45,8 +72,6 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         paddingTop: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: '#EFEFF0',
         paddingBottom: 15,
         width: Dimensions.get('window').width,
         alignItems: 'center',
@@ -56,8 +81,8 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         flex: 1,
         marginLeft: 20,
-        backgroundColor: '#f7f7f7',
-        height: 36,
+        backgroundColor: '#EAEEF1',
+        height: 40,
         paddingLeft: 10,
         borderRadius: 5,
         marginRight: 5,
