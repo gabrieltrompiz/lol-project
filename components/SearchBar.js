@@ -7,6 +7,7 @@ export default class SearchBar extends React.Component {
     constructor(props) {
         super(props)
         this.state = { summonerName: '', loading: false }
+        this.sendSummoner = this.sendSummoner.bind(this)
     }
 
     render() {
@@ -14,26 +15,12 @@ export default class SearchBar extends React.Component {
             <View style={styles.container}>
                 {this.state.loading && <LoadingScreen />}
                 <TextInput
+                    ref={this.textInput}
                     placeholder='Summoner Search'
                     placeholderTextColor='#97A0A7'
                     returnKeyType='search'
-                    onSubmitEditing={async () => { 
-                        Keyboard.dismiss()
-                        this.setState({ loading: true })
-                        this.props.searchSummoner(this.state.summonerName).then((data) => {
-                            this.setState({ loading: false }) 
-                            this.props.navigation.navigate('Summoner', { data: data }) // Data will be sent from here
-                        }, (reason) => {
-                            this.setState({ loading: false })
-                            setTimeout(() => {
-                                Alert.alert(
-                                    'Summoner not found',
-                                    'Please check the summoner name and the server.',
-                                    { text: 'OK' },
-                                    { cancelable: false } )
-                            }, 50) // React Native workaround (bug with Modal and Alert)
-                        })
-                    }}
+                    onSubmitEditing={this.sendSummoner}
+                    multiline={false}
                     style={styles.textInput}
                     onChangeText={ (textInput) => this.setState({ summonerName: textInput })}
                 />
@@ -45,26 +32,43 @@ export default class SearchBar extends React.Component {
                     }}
                     title=''
                     buttonStyle={styles.button}
-                    onPress={async () => {
-                        Keyboard.dismiss()
-                        this.setState({ loading: true })
-                        this.props.searchSummoner(this.state.summonerName).then((data) => {
-                            this.setState({ loading: false })
-                            this.props.navigation.navigate('Summoner',  { data: data })
-                        }, (reason) => {
-                            this.setState({ loading: false })
-                            setTimeout(() => {
-                                Alert.alert(
-                                    'Summoner not found',
-                                    'Please check the summoner name and the server.',
-                                    { text: 'OK' },
-                                    { cancelable: false })
-                            }, 50) // React Native workaround (bug with Modal and Alert)
-                        })
-                    }}
+                    onPress={this.sendSummoner}
                 />
             </View>
         );
+    }
+
+    sendSummoner = () => {
+        if(this.state.summonerName !== '') {
+            Keyboard.dismiss()
+            this.setState({ loading: true })
+            this.props.searchSummoner(this.state.summonerName).then((data) => {
+                this.setState({ loading: false })
+                this.props.navigation.navigate('Summoner', { data: data }) // Data will be sent from here
+            })
+            .catch((reason) => {
+                console.log(reason)
+                this.setState({ loading: false })
+                if (reason.toString().startsWith('Summoner')) {
+                    setTimeout(() => {
+                        Alert.alert(
+                            'Summoner not found',
+                            'Please check the summoner name and the selected server.',
+                            { text: 'OK' },
+                            { cancelable: false })
+                    }, 50) // React Native workaround (bug with Modal and Alert)
+                }
+                else {
+                    setTimeout(() => {
+                        Alert.alert(
+                            'Network Error',
+                            'Please check your internet connection and try again.',
+                            { text: 'OK' },
+                            { cancelable: false })
+                    }, 50) // React Native workaround (bug with Modal and Alert)
+                }
+            })
+        }
     }
 }
 

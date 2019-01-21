@@ -10,7 +10,7 @@ export default class SettingsScreen extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-                <AppHeader theme={this.props.screenProps.theme} title='Settings' />
+                <AppHeader theme={this.props.screenProps.theme} title='Settings' showBack />
             </View>
         );
     }

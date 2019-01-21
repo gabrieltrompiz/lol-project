@@ -9,7 +9,7 @@ export default class AppHeader extends React.Component {
     }
 
     render() {
-        if (this.props.showServer) {
+        if(this.props.showServer) {
             return (
                 <Header
                     leftComponent={
@@ -25,13 +25,13 @@ export default class AppHeader extends React.Component {
                             iconRight
                             titleStyle={{ color: 'white', fontSize: 18, fontWeight: '500' }}
                             buttonStyle={{ backgroundColor: 'transparent', elevation: 0 }}
-                            onPress={() => 
+                            onPress={() =>
                                 ActionSheetIOS.showActionSheetWithOptions({
                                     title: '\nSelect Server',
                                     options: serversFull,
                                     cancelButtonIndex: 11
                                 },
-                                    (index) => { if(index !== 11) this.props.changeServer(serversCodes[index]) } // If checks if cancel was pressed
+                                    (index) => { if (index !== 11) this.props.changeServer(serversCodes[index]) } // If checks if cancel was pressed
                                 )
                             }
                         >
@@ -39,20 +39,19 @@ export default class AppHeader extends React.Component {
                         </Button>
                     }
                     centerComponent={{
-                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600' }
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600', fontFamily: 'Helvetica Neue' }
                     }}
                     rightComponent={
-                        <Button 
+                        <Button
                             title=''
                             icon={
-                                <Icon 
+                                <Icon
                                     name='account'
                                     color='white'
                                     size={20}
                                 />
                             }
                             buttonStyle={{ backgroundColor: 'transparent', elevation: 0, right: 5 }}
-                            // onPress={() => this.props.changeTheme('#24292E')}
                         />
                     }
                     containerStyle={{
@@ -63,11 +62,41 @@ export default class AppHeader extends React.Component {
                     }}
                 />
             );
-        } else {
-            return (
+        }
+        else if(this.props.showBack) {
+            return(
+                <Header
+                    leftComponent={
+                        <Button
+                            title=''
+                            icon={
+                                < Icon
+                                    name="arrow-left"
+                                    color='white'
+                                    size={22}
+                                />
+                            }
+                            buttonStyle={{ backgroundColor: 'transparent', elevation: 0, left: 5 }}
+                            onPress={() => this.props.navigation.goBack()}
+                        />
+                    }
+                    centerComponent={{
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600', fontFamily: 'Helvetica Neue' }
+                    }}
+                    containerStyle={{
+                        height: 100,
+                        backgroundColor: this.props.theme,
+                        borderBottomColor: '#EFEFF0',
+                        borderBottomWidth: 1
+                    }}
+                />
+            );
+        }
+        else {
+            return(
                 <Header
                     centerComponent={{
-                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600' }
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600', fontFamily: 'Helvetica Neue' }
                     }}
                     containerStyle={{
                         height: 100,
@@ -82,4 +111,4 @@ export default class AppHeader extends React.Component {
 }
 
 const serversFull = ['Brazil', 'Europe Nordic & East', 'Europe West', 'Korea', 'Latin America North', 'Latin America South', 'North America', 'Oceania', 'Russia', 'Turkey', 'Japan', 'Cancel']
-const serversCodes = ['BR', 'EUN', 'EUW', 'KR', 'LAN', 'LAS', 'NA', 'OCE', 'RU', 'TR', 'JP']
+const serversCodes = ['BR', 'EUN', 'EUW', 'KR', 'LAN', 'LAS', 'NA', 'OCE', 'RU', 'TR', 'JP'] // TODO: Refactor (iterate through JSON)

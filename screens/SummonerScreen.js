@@ -9,11 +9,11 @@ export default class SummonerScreen extends React.Component {
 
     render() {
         const data = this.props.navigation.getParam('data', 'Empty' )
-        console.log(data)
         return (
             <View style={styles.container}>
-                <AppHeader theme={this.props.screenProps.theme} title='Summoner' />
-                <Text style={{alignSelf: 'flex-start', fontWeight: '600'}}>Account ID:</Text><Text style={{alignSelf: 'flex-start'}}>{data.accountId}</Text>
+                <AppHeader theme={this.props.screenProps.theme} title='Summoner' showBack navigation={this.props.navigation}/>
+                <Text style={{ alignSelf: 'flex-start', fontWeight: '600' }}>Summoner Name:</Text><Text style={{ alignSelf: 'flex-start' }}>{data.name}</Text>
+                <Text style={{ alignSelf: 'flex-start', fontWeight: '600' }}>Account ID:</Text><Text style={{ alignSelf: 'flex-start' }}>{data.accountId}</Text>
                 <Text style={{ alignSelf: 'flex-start', fontWeight: '600' }}>ID:</Text><Text style={{ alignSelf: 'flex-start' }}>{data.id}</Text>
                 <Text style={{ alignSelf: 'flex-start', fontWeight: '600' }}>Profile Icon ID:</Text><Text style={{ alignSelf: 'flex-start' }}>{data.profileIconId}</Text>
                 <Text style={{ alignSelf: 'flex-start', fontWeight: '600' }}>PUUID:</Text><Text style={{ alignSelf: 'flex-start' }}>{data.puuid}</Text>
