@@ -9,10 +9,14 @@ import AppContainer from './components/AppContainer'
 export default class App extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { isContentLoaded: false, server: 'NA', theme: '#24292E', loading: false } // Default state
-    this.searchSummoner = this.searchSummoner.bind(this)
-    this._retrieveState() // Looks for state in AsyncStorage, if null will use default state
+    AsyncStorage.removeItem('THEME')
+    this.state = { isContentLoaded: false, server: 'NA', theme: '#fa1635', loading: false } // Default state
+    this.searchSummoner = this.searchSummoner.bind(this)  
   }
+
+  componentDidMount = () => {
+    this._retrieveState() // Looks for state in AsyncStorage, if null will use default state
+  } 
 
   _retrieveState = async () => {
     const server = await AsyncStorage.getItem('SERVER')

@@ -35,7 +35,8 @@ export default class HomeScreen extends React.Component {
         return (
             <View style={styles.container}>
                 <AppHeader theme={this.props.screenProps.theme} title='League of Legends' 
-                showServer server={this.props.screenProps.server} changeServer={this.props.screenProps.changeServer} />
+                showServer server={this.props.screenProps.server} changeServer={this.props.screenProps.changeServer} 
+                changeTheme={this.props.screenProps.changeTheme}/>
                 <SearchBar searchSummoner={this.props.screenProps.searchSummoner} navigation={this.props.navigation}
                 setLoading={this.props.screenProps.setLoading} />
                 <View style={{ alignSelf: 'flex-start' }}>

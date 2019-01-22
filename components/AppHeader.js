@@ -31,12 +31,10 @@ export default class AppHeader extends React.Component {
                                     options: serversFull,
                                     cancelButtonIndex: 11
                                 },
-                                    (index) => { if (index !== 11) this.props.changeServer(serversCodes[index]) } // If checks if cancel was pressed
+                                    (index) => { if (index !== 11) this.props.changeServer(serversCodes[index]) } // Checks if cancel was pressed
                                 )
                             }
-                        >
-                            <Text style={{ color: 'black', fontSize: 18, fontWeight: '500' }}>{this.props.server}</Text>
-                        </Button>
+                        />
                     }
                     centerComponent={{
                         text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600', fontFamily: 'Helvetica Neue' }
@@ -52,6 +50,7 @@ export default class AppHeader extends React.Component {
                                 />
                             }
                             buttonStyle={{ backgroundColor: 'transparent', elevation: 0, right: 5 }}
+                            onPress={() => this.props.changeTheme('#fa1635')}
                         />
                     }
                     containerStyle={{

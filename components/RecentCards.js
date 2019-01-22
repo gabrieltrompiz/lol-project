@@ -19,13 +19,13 @@ export default class RecentCards extends React.Component {
                         style={{ alignSelf: 'center', bottom: 20 }}
                     />
                     <Text style={{ alignSelf: 'center', bottom: 20, color: '#CDD0D3', fontSize: 20 }}>
-                        There is no recent searches.
+                        There are no recent searches
                     </Text>
                 </View>
             );
         }
         else {
-            let scrollable = this.props.cards.length > 4
+            const scrollable = this.props.cards.length > 4
             return(
                 <View style={styles.scrollable}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={scrollable} pagingEnabled contentInset={{ right: 20 }}>

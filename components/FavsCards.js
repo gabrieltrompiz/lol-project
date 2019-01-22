@@ -13,10 +13,10 @@ export default class FavCards extends React.Component {
             return (
                 <View style={styles.container}>
                     <Text style={{ alignSelf: 'center', bottom: 0, color: '#CDD0D3', fontSize: 20 }}>
-                        You can add a Summoner here by
+                        You can add summoners here by
                         </Text>
                     <Text style={{ alignSelf: 'center', bottom: 20, color: '#CDD0D3', fontSize: 20 }}>
-                        {"\n"}selecting a
+                        {"\n"}pressing the
                             <Icon
                             name='star-outline'
                             color='#CDD0D3'
@@ -27,7 +27,7 @@ export default class FavCards extends React.Component {
             );
         }
         else {
-            let scrollable = this.props.cards.length > 4
+            const scrollable = this.props.cards.length > 4
             return (
                 <View style={styles.scrollable}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={scrollable} pagingEnabled contentInset={{ right: 20 }}>
