@@ -86,7 +86,7 @@ export default class App extends React.Component {
     this.setState({ isContentLoaded: true })
   }
 
-  searchSummoner(summonerName) { //FIXME: do TODOs!!!
+  async searchSummoner(summonerName) { //FIXME: do TODOs!!!
     return new Promise((resolve, reject) => {
       const firestore = !firebase.apps.length ? firebase.initializeApp(config).firestore() : firebase.app().firestore();
       let firestoreCollection = firestore.collection('users-' + this.state.server.toLowerCase())
@@ -114,17 +114,31 @@ export default class App extends React.Component {
           .then(response => {
             if (response.status === 200) { // HTTP Status 200: OK
               response.json().then(data => {
-                firestoreCollection.doc(summonerName.toLowerCase()).set({
-                  accountId: data.accountId,
-                  id: data.id,
-                  profileIconId: data.profileIconId,
-                  puuid: data.puuid,
-                  revisionDate: data.revisionDate,
-                  summonerLevel: data.summonerLevel,
-                  name: data.name
+                fetch('https://' + endpoint + '.api.riotgames.com/lol/league/v4/positions/by-summoner/' + encodeURI(data.id) + '?api_key=' + riotApiKey,
+                  { headers: { "X-Riot-Token": riotApiKey, "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8", "Accept-Language": "en-US,en;q=0.9" } })
+                .then(response => {
+                  if(response.status === 200) {
+                    response.json().then(data2 => {
+                      firestoreCollection.doc(summonerName.toLowerCase()).set({
+                        accountId: data.accountId,
+                        id: data.id,
+                        profileIconId: data.profileIconId,
+                        puuid: data.puuid,
+                        revisionDate: data.revisionDate,
+                        summonerLevel: data.summonerLevel,
+                        name: data.name,
+                        soloQ: typeof data2[2] !== 'undefined' ? { "league": data2[2].tier, "rank": data2[2].rank, "lp": data2[2].leaguePoints, 
+                        "wins": data2[2].wins, "losses": data2[2].losses } : null,
+                        flex5v5: typeof data2[1] !== 'undefined' ? {"league": data2[1].tier, "rank": data2[1].rank, "lp": data2[1].leaguePoints, 
+                        "wins": data2[1].wins, "losses": data2[1].losses } : null,
+                        flex3v3: typeof data2[0] !== 'undefined' ? { "league": data2[0].tier, "rank": data2[0].rank, "lp": data2[0].leaguePoints, 
+                        "wins": data2[0].wins, "losses": data2[0].losses } : null
+                      })
+                        .then(() => firestoreCollection.get(summonerName.toLowerCase()).then(doc => resolve(doc.data()))) // Send data through resolve()
+                      .catch(() => { reject('Firebase Error: Writing doc') })
+                    })
+                  }
                 })
-                .then(() => resolve(data)) // Send data through resolve()
-                .catch(() => { reject('Firebase Error: Writing doc') })
               })
             }
             else if (response.status === 404) { // HTTP Status 404: Not Found

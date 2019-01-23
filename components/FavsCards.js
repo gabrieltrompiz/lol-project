@@ -32,27 +32,27 @@ export default class FavCards extends React.Component {
                 <View style={styles.scrollable}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={scrollable} pagingEnabled contentInset={{ right: 20 }}>
                         <View>
-                            <SummonersCard summoner={this.props.cards[0]} />
+                            <SummonersCard summoner={this.props.cards[0]} navigation={this.props.navigation} fav/>
                             {this.props.cards.length >= 2 &&
-                            <SummonersCard summoner={this.props.cards[1]} />}
+                            <SummonersCard summoner={this.props.cards[1]} navigation={this.props.navigation} fav/>}
                         </View>
                         {this.props.cards.length > 2 &&
                         <View>
-                            <SummonersCard summoner={this.props.cards[2]} />
+                            <SummonersCard summoner={this.props.cards[2]} navigation={this.props.navigation} fav/>
                             {this.props.cards.length >= 4 &&
-                            <SummonersCard summoner={this.props.cards[3]} />}
+                            <SummonersCard summoner={this.props.cards[3]} navigation={this.props.navigation} fav/>}
                         </View>}
                         {this.props.cards.length > 4 &&
                         <View>
-                            <SummonersCard summoner={this.props.cards[4]} />
+                            <SummonersCard summoner={this.props.cards[4]} navigation={this.props.navigation} fav/>
                             {this.props.cards.length >= 6 &&
-                            <SummonersCard summoner={this.props.cards[5]} />}
+                            <SummonersCard summoner={this.props.cards[5]} navigation={this.props.navigation} fav/>}
                         </View>}
                         {this.props.cards.length > 6 &&
                         <View>
-                            <SummonersCard summoner={this.props.cards[6]} />
+                            <SummonersCard summoner={this.props.cards[6]} navigation={this.props.navigation} fav/>
                             {this.props.cards.length >= 8 &&
-                            <SummonersCard summoner={this.props.cards[7]} />}
+                            <SummonersCard summoner={this.props.cards[7]} navigation={this.props.navigation} fav/>}
                         </View>}
                     </ScrollView>
                 </View>
