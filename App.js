@@ -10,7 +10,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props)
     AsyncStorage.removeItem('THEME')
-    this.state = { isContentLoaded: false, server: 'NA', theme: '#fa1635', loading: false } // Default state
+    this.state = { isContentLoaded: false, server: 'NA', theme: '#3F51B5', loading: false } // Default state
     this.searchSummoner = this.searchSummoner.bind(this)  
   }
 
@@ -127,15 +127,15 @@ export default class App extends React.Component {
                         revisionDate: data.revisionDate,
                         summonerLevel: data.summonerLevel,
                         name: data.name,
-                        soloQ: typeof data2[2] !== 'undefined' ? { "league": data2[2].tier, "rank": data2[2].rank, "lp": data2[2].leaguePoints, 
-                        "wins": data2[2].wins, "losses": data2[2].losses } : null,
-                        flex5v5: typeof data2[1] !== 'undefined' ? {"league": data2[1].tier, "rank": data2[1].rank, "lp": data2[1].leaguePoints, 
-                        "wins": data2[1].wins, "losses": data2[1].losses } : null,
-                        flex3v3: typeof data2[0] !== 'undefined' ? { "league": data2[0].tier, "rank": data2[0].rank, "lp": data2[0].leaguePoints, 
-                        "wins": data2[0].wins, "losses": data2[0].losses } : null
+                        q3: typeof data2[2] !== 'undefined' ? { "league": data2[2].tier, "rank": data2[2].rank, "lp": data2[2].leaguePoints, 
+                          "wins": data2[2].wins, "losses": data2[2].losses, "queue": data2[2].queueType } : { "league": "UNRANKED", "rank": "0" },
+                        q2: typeof data2[1] !== 'undefined' ? {"league": data2[1].tier, "rank": data2[1].rank, "lp": data2[1].leaguePoints, 
+                          "wins": data2[1].wins, "losses": data2[1].losses, "queue": data2[1].queueType } : { "league": "UNRANKED", "rank": "0" },
+                        q1: typeof data2[0] !== 'undefined' ? { "league": data2[0].tier, "rank": data2[0].rank, "lp": data2[0].leaguePoints, 
+                          "wins": data2[0].wins, "losses": data2[0].losses, "queue": data2[0].queueType } : { "league": "UNRANKED", "rank": "0" }
                       })
-                        .then(() => firestoreCollection.get(summonerName.toLowerCase()).then(doc => resolve(doc.data()))) // Send data through resolve()
-                      .catch(() => { reject('Firebase Error: Writing doc') })
+                      .then(() => firestoreCollection.doc(summonerName.toLowerCase()).get().then(doc => resolve(doc.data()))) // Send data through resolve()
+                      .catch((error) => { reject('Firebase Error: Writing doc: ' + error) })
                     })
                   }
                 })

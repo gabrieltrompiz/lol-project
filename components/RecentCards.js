@@ -28,7 +28,7 @@ export default class RecentCards extends React.Component {
             const scrollable = this.props.cards.length > 4
             return(
                 <View style={styles.scrollable}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={scrollable} pagingEnabled contentInset={{ right: 20 }}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={scrollable} contentInset={{ right: 20 }}>
                         <View>
                             <SummonersCard summoner={this.props.cards[0]} navigation={this.props.navigation} />
                             {this.props.cards.length >= 2 && 
@@ -77,5 +77,5 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width,
         left: Dimensions.get('window').width * 0.03,
         top: 0
-    }
+    } 
 })

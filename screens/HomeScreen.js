@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, Dimensions, Text, AsyncStorage } from 'react-native'
+import { View, StyleSheet, Dimensions, Text, AsyncStorage, TouchableOpacity, Alert} from 'react-native'
 import SearchBar from '../components/SearchBar';
 import AppHeader from '../components/AppHeader'
 import RecentCards from '../components/RecentCards'
@@ -48,6 +48,16 @@ export default class HomeScreen extends React.Component {
         })
     }
 
+    clearRecents = () => {
+        Alert.alert(
+            'Do you want to clear the search history?',
+            'You cannot undo this action',
+            [{ text: 'Cancel', style: 'cancel', onPress: () => {} },
+            { text: 'OK', onPress: () => { AsyncStorage.removeItem('RECENT'); this.setState({ recent: [] }) } }],
+            { cancelable: false }
+        )
+    }
+
     handleAddFav = async (summoner) => {
         let favs = [...this.state.favs]
         favs.forEach(item => {
@@ -75,12 +85,19 @@ export default class HomeScreen extends React.Component {
                 showServer server={this.props.screenProps.server} changeServer={this.props.screenProps.changeServer}/>
                 <SearchBar navigation={this.props.navigation} addRecent={this.handleAddRecent}/>
                 <View style={{ alignSelf: 'flex-start' }}>
-                    <Text style={styles.recentText}>Recent Search</Text> 
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.recentText}>Recent Search</Text>
+                        <TouchableOpacity 
+                            style={{left: Dimensions.get('window').width * 0.36, width: 50, height: 20, justifyContent: 'center', alignItems: 'center', top: 2}}
+                            onPress={() => this.clearRecents()}
+                        >
+                            <Text style={{ fontSize: 20, fontWeight: '200', fontFamily: 'Helvetica Neue' }}>Clear</Text>
+                        </TouchableOpacity>
+                    </View>
                     <RecentCards cards={this.state.recent} favs={this.state.favs} addFav={this.handleAddFav} navigation={this.props.navigation}/>
                     <Text style={styles.favText}>Favorites</Text> 
                     <FavCards cards={this.state.favs} />
                 </View>
-                
             </View>
         );
     }
@@ -100,7 +117,7 @@ let styles = StyleSheet.create({
         fontWeight: '600', 
         top: -5, 
         left: 20,
-        textAlign: 'left' 
+        textAlign: 'left'
     },
     favText: {
         fontSize: 30,

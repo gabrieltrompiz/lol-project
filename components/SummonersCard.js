@@ -18,21 +18,21 @@ export default class SummonersCard extends React.Component {
         romanMap.set('I', 1); romanMap.set('II', 2); romanMap.set('III', 3); romanMap.set('IV', 4) // Map for ranks
         let leagueMap = new Map()
         leagueMap.set('IRON', 0); leagueMap.set('BRONZE', 1); leagueMap.set('SILVER', 2); leagueMap.set('GOLD', 3); leagueMap.set('PLATINUM', 4);
-        leagueMap.set('DIAMOND', 5), leagueMap.set('MASTERS', 6); leagueMap.set('GRANDMASTERS', 7); leagueMap.set('CHALLENGER', 8); // Map for leagues
-        const soloQ = this.props.summoner.soloQ !== null ? { 'weight': leagueMap.get(this.props.summoner.soloQ.league), 'queue': 'soloQ',
-        'rank': romanMap.get(this.props.summoner.soloQ.rank) } : { 'weight': -1 } // JSON with data about league
-        const flex5v5 = this.props.summoner.flex5v5 !== null ? { 'weight': leagueMap.get(this.props.summoner.flex5v5.league), 'queue': 'flex5v5',
-        'rank': romanMap.get(this.props.summoner.flex5v5.rank) } : { 'weight': -1 }  // JSON with data about league
-        const flex3v3 = this.props.summoner.flex3v3 !== null ? { 'weight': leagueMap.get(this.props.summoner.flex3v3.league), 'queue': 'flex3v3',
-        'rank': romanMap.get(this.props.summoner.flex3v3.rank) } : { 'weight': -1 }  // JSON with data about league
-        const weights = [soloQ, flex5v5, flex3v3] // Array with Qs
+        leagueMap.set('DIAMOND', 5), leagueMap.set('MASTER', 6); leagueMap.set('GRANDMASTER', 7); leagueMap.set('CHALLENGER', 8); // Map for leagues
+        const q1 = this.props.summoner.q1.league != 'UNRANKED'  ? { 'weight': leagueMap.get(this.props.summoner.q1.league), 'queue': this.props.summoner.q1.queue,
+        'rank': romanMap.get(this.props.summoner.q1.rank) } : { 'weight': -1, "queue": "" } // JSON with data about league
+        const q2 = this.props.summoner.q2.league != 'UNRANKED' ? { 'weight': leagueMap.get(this.props.summoner.q2.league), 'queue': this.props.summoner.q2.queue,
+        'rank': romanMap.get(this.props.summoner.q2.rank) } : { 'weight': -1, "queue": "" }  // JSON with data about league
+        const q3 = this.props.summoner.q3.league != 'UNRANKED' ? { 'weight': leagueMap.get(this.props.summoner.q3.league), 'queue': this.props.summoner.q3.queue,
+        'rank': romanMap.get(this.props.summoner.q3.rank) } : { 'weight': -1, "queue": "" }  // JSON with data about league
+        const weights = [q1, q2, q3] // Array with Qs
         const highest = Math.max(weights[0].weight, weights[1].weight, weights[2].weight) // Highest Q
         let winners = []
         weights.forEach((item) => {
             if (item.weight === highest) { winners.push(item) } // Get winner Q
         })
         if (winners[0].weight === -1) {
-            return 'unranked';
+            return 'UNRANKED';
         }
         else if (winners.length === 1) { return winners[0].queue }
         else if (winners.length === 2) {
@@ -48,15 +48,12 @@ export default class SummonersCard extends React.Component {
 
     render() {
         let source = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/' + this.source + '.jpg'
-        // let ranked = 'https://raw.communitydragon.org/8.23/plugins/rcp-fe-lol-league-tier-names/global/default/assets/images/ranked-crests/' + 
-        // this.props.summoner.soloQ.league.toLowerCase() + '_' + romanMap.get(this.props.summoner.soloQ.rank) + '.png']
+        const bestQ = this.getHighestQ()
         let queue;
-        switch(this.getHighestQ()) {
-            case 'soloQ': queue = this.props.summoner.soloQ; break;
-            case 'flex5v5': queue = this.props.summoner.flex5v5; break;
-            case 'flex3v3': queue = this.props.summoner.flex3v3; break;
-            case 'unranked': queue = { "league": "Unranked", "rank": ""};
-        }
+        if(this.props.summoner.q1.queue == bestQ) { queue = this.props.summoner.q1 }
+        else if(this.props.summoner.q2.queue == bestQ) { queue = this.props.summoner.q2 }
+        else if(this.props.summoner.q3.queue == bestQ) { queue = this.props.summoner.q3 }
+        else { queue = { "league": "UNRANKED" } }
         let ranked = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-league-tier-names/global/default/assets/images/ranked-mini-regalia/' +
         queue.league.toLowerCase() + '.png'
         let league = queue.league
@@ -71,24 +68,29 @@ export default class SummonersCard extends React.Component {
                         }
                         buttonStyle={{ width: 25, height: 25, position: 'absolute', left: Dimensions.get('window').width * 0.15, backgroundColor: 'transparent', top: -5 }}
                         onPress={() => {
-                            console.log('fav')
                             if(!this.state.fav) { this.setState({ fav: true }, () => this.props.addFav(this.props.summoner)) }
                         }}
                     />}
                     <Image source={{ uri: source, width: 40, height: 40 }} style={{ borderRadius: 20 }}/>
                     <Text style={{ fontWeight: '800', fontSize: 16, fontFamily: 'Helvetica Neue' }}>{this.props.summoner.summonerLevel}</Text>
                     <Text style={{ fontWeight: '500', fontFamily: 'Helvetica Neue' }} >{this.props.summoner.name}</Text>
-                    {queue.league !== 'Unranked' &&
+                    {!withoutRank.includes(league) &&
                     <View style={{ flexDirection: 'row' }}>
                         <Text>{league.charAt(0) + league.slice(1).toLowerCase() + " " + queue.rank}</Text>
                         <Image source={{ uri: ranked, width: 15, height: 15 }} style={{ left: 2 }} />
                     </View>}
-                    {queue.league === 'Unranked' && <Text>Unranked</Text>}
+                    {withoutRank.includes(league) && 
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text>{league.charAt(0) + league.slice(1).toLowerCase()}</Text>
+                        {league != 'UNRANKED' && <Image source={{ uri: ranked, width: 15, height: 15 }} style={{ left: 2 }} />}
+                    </View>}
                 </TouchableOpacity>
             </View>
         );
     }
 }
+
+const withoutRank = ['UNRANKED', 'CHALLENGER', 'GRANDMASTER', 'MASTER']
 
 const styles = StyleSheet.create({
     container: {
