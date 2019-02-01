@@ -1,5 +1,5 @@
 import React from 'react'
-import { createAppContainer, createBottomTabNavigator, createStackNavigator } from 'react-navigation'
+import { createStackNavigator, createAppContainer, createBottomTabNavigator } from 'react-navigation'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Image } from 'react-native'
 import HomeScreen from '../screens/HomeScreen'

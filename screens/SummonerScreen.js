@@ -3,17 +3,22 @@ import { View, Text, Alert, Image, StyleSheet, ScrollView, Button, Dimensions } 
 import AppHeader from '../components/AppHeader'
 import LoadingScreen from './LoadingScreen'
 import QueueCard from '../components/QueueCard'
+import 'firebase/firestore';
 
 export default class SummonerScreen extends React.Component {
     constructor(props) {
         super(props)
         this.summonerName = this.props.navigation.getParam('summoner', '')
         this.profile = this.props.navigation.getParam('profile', null)
-        this.state = { loading: false, data: this.profile }
+        this.state = { loading: false, data: this.profile, now: 0 }
     }
 
     componentDidMount = () => {
         this.mounted = true;
+        fetch('http://worldtimeapi.org/api/timezone/America/New_York').then(response => {
+                response.json().then(data => { this.setState({ now: data.unixtime }) })
+        })
+        .catch(()=> console.log('Timezone fetch error'))
         if(this.state.data === null) { this.sendSummoner() }
     }
 
@@ -66,19 +71,47 @@ export default class SummonerScreen extends React.Component {
         return [sortedRankedQueues[0].qObj, sortedRankedQueues[1].qObj, sortedRankedQueues[2].qObj]
     }
 
+    getDate = seconds => {
+        if(seconds <= 0) { return '' }
+        if(seconds <= 5) { return 'a few seconds ago' }
+        else if(seconds < 60) { return seconds + ' seconds ago' }
+        else if(seconds < 3600) { 
+            const unit = Math.trunc(seconds / 60) == 1 ? ' minute ago' : ' minutes ago'
+            return Math.trunc(seconds / 60) + unit
+        }
+        else if(seconds < 86400) { 
+            const unit = Math.trunc(seconds / 3600) == 1 ? ' hour ago' : ' hours ago'
+            return Math.trunc(seconds / 3600) + unit 
+        }
+        else if(seconds < 604800) { 
+            const unit = Math.trunc(seconds / 86400) == 1 ? ' day ago' : ' days ago'
+            return Math.trunc(seconds / 86400) + unit
+        }
+        else if(seconds < 2419200) {
+            const unit = Math.trunc(seconds / 604800) == 1 ? ' week ago' : ' weeks ago'
+            return Math.trunc(seconds / 604800) + unit
+        }
+        else { return 'a long time ago'}
+    }
+
     render() {
+        let before = 0;
         if(this.state.data !== null) {
             [soloQ, flex5, flex3] = this.sortQueues()
+            before = this.state.data.timestamp
         }
         return (
             <View style={styles.container}>
                 <AppHeader theme={this.props.screenProps.theme} title='Summoner' showBack navigation={this.props.navigation}/>
                 {this.state.loading && <LoadingScreen />}
                 {this.state.data !== null &&
-                <View style={{ height: 130, flexDirection: 'row' }}>
+                <View style={{ height: 110, flexDirection: 'row' }}>
                     <Image source={{ uri: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/' 
-                    + this.state.data.profileIconId + '.jpg', width: 80, height: 80 }} style={{ borderRadius: 40, marginTop: 25, marginLeft: 25 }}/>
-                    <Text style={styles.summonerName}>{this.state.data.name}</Text>
+                    + this.state.data.profileIconId + '.jpg', width: 80, height: 80 }} style={{ borderRadius: 40, marginTop: 15, marginLeft: 25 }}/>
+                    <View>
+                        <Text style={styles.summonerName}>{this.state.data.name}</Text>
+                        <Text style={styles.lastUpdate}>Last update: {this.getDate(this.state.now - before)}</Text>
+                    </View>
                 </View>}
                 {this.state.data !== null &&
                 <View style={{ height: 110 }}> 
@@ -88,6 +121,7 @@ export default class SummonerScreen extends React.Component {
                         <QueueCard queue={flex3} /> 
                     </ScrollView>
                 </View>}
+                {this.state.data !== null && <Text>a</Text>}
             </View>
         );
     }
@@ -133,7 +167,13 @@ const styles = StyleSheet.create({
         color: '#282828',
         fontFamily: 'Helvetica Neue',
         fontWeight: '600', 
-        marginTop: 50,
+        marginTop: 30,
         marginLeft: 15
+    }, 
+    lastUpdate: {
+        marginLeft: 15, 
+        opacity: 0.8,
+        fontFamily: 'Helvetica Neue',
+        fontWeight: '300'
     }
 })

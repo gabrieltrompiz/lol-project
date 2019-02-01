@@ -88,6 +88,10 @@ export default class App extends React.Component {
 
   async searchSummoner(summonerName) { //FIXME: do TODOs!!!
     return new Promise((resolve, reject) => {
+      let now = 0;
+      fetch('http://worldtimeapi.org/api/timezone/America/New_York').then(response => {
+        response.json().then(data => now = data.unixtime)
+      })
       const firestore = !firebase.apps.length ? firebase.initializeApp(config).firestore() : firebase.app().firestore();
       let firestoreCollection = firestore.collection('users-' + this.state.server.toLowerCase())
       firestoreCollection.doc(summonerName.toLowerCase()).get().then(doc => {
@@ -132,7 +136,8 @@ export default class App extends React.Component {
                         q2: typeof data2[1] !== 'undefined' ? {"league": data2[1].tier, "rank": data2[1].rank, "lp": data2[1].leaguePoints, 
                           "wins": data2[1].wins, "losses": data2[1].losses, "queue": data2[1].queueType } : { "league": "UNRANKED", "rank": "0" },
                         q1: typeof data2[0] !== 'undefined' ? { "league": data2[0].tier, "rank": data2[0].rank, "lp": data2[0].leaguePoints, 
-                          "wins": data2[0].wins, "losses": data2[0].losses, "queue": data2[0].queueType } : { "league": "UNRANKED", "rank": "0" }
+                          "wins": data2[0].wins, "losses": data2[0].losses, "queue": data2[0].queueType } : { "league": "UNRANKED", "rank": "0" },
+                        timestamp: now
                       })
                       .then(() => firestoreCollection.doc(summonerName.toLowerCase()).get().then(doc => resolve(doc.data()))) // Send data through resolve()
                       .catch((error) => { reject('Firebase Error: Writing doc: ' + error) })

@@ -14,7 +14,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#fa1635"
+      "backgroundColor": "#3F51B5"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -24,6 +24,7 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "React Native App using League of Legends API and Community Dragon API"
   }
 }
