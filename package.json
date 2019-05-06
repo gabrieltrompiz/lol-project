@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@expo/samples": "2.1.1",
-    "expo": "^32.0.0",
+    "@expo/vector-icons": "^10.0.1",
+    "expo": "^32.0.4",
     "firebase": "^5.8.2",
     "lottie-react-native": "^2.5.11",
     "react": "16.5.0",
@@ -24,7 +25,8 @@
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
-    "jest-expo": "^32.0.0"
+    "jest-expo": "^32.0.0",
+    "reactotron-react-native": "^3.4.1"
   },
   "private": true
 }

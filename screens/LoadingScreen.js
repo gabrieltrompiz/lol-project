@@ -1,6 +1,8 @@
 import React from 'react'
-import { Modal, Dimensions, StyleSheet, View } from 'react-native'
+import { Dimensions, StyleSheet, View } from 'react-native'
+import { BlurView } from 'expo'
 import LottieView from 'lottie-react-native'
+import { hp } from '../tools/pixel-ratio-helper'
 
 export default class LoadingScreen extends React.Component {
     constructor(props){
@@ -10,7 +12,9 @@ export default class LoadingScreen extends React.Component {
     render() {
         return(
             <View style={styles.container}>
-                <LottieView source={require('../assets/animation.json')} autoPlay loop style={{ width: 150 }} />
+                <BlurView intensity={100} tint='light' style={{ width: 150, borderRadius: 10 }}>
+                    <LottieView source={require('../assets/animation.json')} autoPlay loop style={{ width: 150 }} />
+                </BlurView>
             </View>
         );
     }
@@ -19,8 +23,11 @@ export default class LoadingScreen extends React.Component {
 const styles = StyleSheet.create({
     container: {
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height / 1.3,
+        height: hp('100%'),
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+        position: 'absolute',
+        zIndex: 5
     }
 })

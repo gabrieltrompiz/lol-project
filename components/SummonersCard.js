@@ -1,7 +1,9 @@
 import React from 'react'
-import { View, Dimensions, StyleSheet, Text, Image, TouchableOpacity, AsyncStorage } from 'react-native'
+import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Button } from 'react-native-elements'
+import RankedCrest from './RankedCrest'
+import { wp, hp } from '../tools/pixel-ratio-helper'
 
 export default class SummonersCard extends React.Component {
     constructor(props) {
@@ -54,35 +56,33 @@ export default class SummonersCard extends React.Component {
         else if(this.props.summoner.q2.queue == bestQ) { queue = this.props.summoner.q2 }
         else if(this.props.summoner.q3.queue == bestQ) { queue = this.props.summoner.q3 }
         else { queue = { "league": "UNRANKED" } }
-        let ranked = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-league-tier-names/global/default/assets/images/ranked-mini-regalia/' +
-        queue.league.toLowerCase() + '.png'
         let league = queue.league
         return(
             <View>
-                <TouchableOpacity style={styles.container} onPress={() => this.props.navigation.navigate('Summoner', { "profile": this.props.summoner })}>
+                <TouchableOpacity style={styles.container} onPress={() => this.props.navigation.navigate('Summoner', { "profile": this.props.summoner, "update": this.props.updateSummoner })}>
                     {this.props.fav &&
                     <Button
                         title=''
                         icon={
                             <Icon name='star' size={20} color='red' />
                         }
-                        buttonStyle={{ width: 25, height: 25, position: 'absolute', left: Dimensions.get('window').width * 0.15, backgroundColor: 'transparent', top: -5 }}
+                        buttonStyle={{ width: 25, height: 25, position: 'absolute', left: wp('15%'), backgroundColor: 'transparent', top: -5 }}
                         onPress={() => {
                             if(!this.state.fav) { this.setState({ fav: true }, () => this.props.addFav(this.props.summoner)) }
                         }}
                     />}
-                    <Image source={{ uri: source, width: 40, height: 40 }} style={{ borderRadius: 20 }}/>
+                    <Image source={{ uri: source, width: 40, height: 40, cache: 'force-cache' }} style={{ borderRadius: 20 }}/>
                     <Text style={{ fontWeight: '800', fontSize: 16, fontFamily: 'Helvetica Neue' }}>{this.props.summoner.summonerLevel}</Text>
                     <Text style={{ fontWeight: '500', fontFamily: 'Helvetica Neue' }} >{this.props.summoner.name}</Text>
                     {!withoutRank.includes(league) &&
                     <View style={{ flexDirection: 'row' }}>
-                        <Text>{league.charAt(0) + league.slice(1).toLowerCase() + " " + queue.rank}</Text>
-                        <Image source={{ uri: ranked, width: 15, height: 15 }} style={{ left: 2 }} />
+                        <Text style={{ fontWeight: '200' }}>{league.charAt(0) + league.slice(1).toLowerCase() + " " + queue.rank}</Text>
+                        <RankedCrest league={league} rank={queue.rank} width={16} height={16} />
                     </View>}
                     {withoutRank.includes(league) && 
                     <View style={{ flexDirection: 'row' }}>
-                        <Text>{league.charAt(0) + league.slice(1).toLowerCase()}</Text>
-                        {league != 'UNRANKED' && <Image source={{ uri: ranked, width: 15, height: 15 }} style={{ left: 2 }} />}
+                        <Text style={{ fontWeight: '200' }}>{league.charAt(0) + league.slice(1).toLowerCase()}</Text>
+                        {league != 'UNRANKED' && <RankedCrest league={league} rank={queue.rank} width={16} height={16} />}
                     </View>}
                 </TouchableOpacity>
             </View>
@@ -94,8 +94,8 @@ const withoutRank = ['UNRANKED', 'CHALLENGER', 'GRANDMASTER', 'MASTER']
 
 const styles = StyleSheet.create({
     container: {
-        width: Dimensions.get('window').width * 0.45,
-        height: Dimensions.get('window').height * 0.13,
+        width: wp('45%'),
+        height: hp('13%'),
         marginBottom: 5,
         marginTop: 5,
         marginLeft: 5,

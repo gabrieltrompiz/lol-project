@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text, Dimensions, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import RankedCrest from './RankedCrest'
+import { wp } from '../tools/pixel-ratio-helper'
 
 export default class QueueCard extends React.Component {
     constructor(props) {
@@ -30,7 +31,7 @@ export default class QueueCard extends React.Component {
         return(
             <View style={styles.rankedCard}>
                 <View style={{ alignSelf: 'center', right: 5 }}>
-                    <RankedCrest league={this.props.queue.league} division={this.props.queue.rank} width={80} height={80} />
+                    <RankedCrest league={this.props.queue.league} division={this.props.queue.rank} width={80} height={80} shadow />
                 </View>
                 <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', right: 5 }}>
                     <Text style={styles.rankedText}>{queueType.get(this.props.queue.queue)}</Text>
@@ -56,7 +57,7 @@ const withoutRank = ['UNRANKED', 'CHALLENGER', 'MASTER', 'GRANDMASTER']
 const styles = StyleSheet.create({
     rankedCard: {
         flexDirection: 'row',
-        width: Dimensions.get('window').width * 0.55,
+        width: wp('55%'),
         height: 100,
         marginBottom: 5,
         marginTop: 5,

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Alert, Image, StyleSheet, ScrollView, Button, Dimensions } from 'react-native'
+import { View, Text, Alert, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, AsyncStorage } from 'react-native'
 import AppHeader from '../components/AppHeader'
 import LoadingScreen from './LoadingScreen'
 import QueueCard from '../components/QueueCard'
@@ -10,6 +10,7 @@ export default class SummonerScreen extends React.Component {
         super(props)
         this.summonerName = this.props.navigation.getParam('summoner', '')
         this.profile = this.props.navigation.getParam('profile', null)
+        this.update = this.props.navigation.getParam('update', () => { console.log('Error') })
         this.state = { loading: false, data: this.profile, now: 0 }
     }
 
@@ -18,7 +19,7 @@ export default class SummonerScreen extends React.Component {
         fetch('http://worldtimeapi.org/api/timezone/America/New_York').then(response => {
                 response.json().then(data => { this.setState({ now: data.unixtime }) })
         })
-        .catch(()=> console.log('Timezone fetch error'))
+        .catch(() => console.log('Timezone fetch error'))
         if(this.state.data === null) { this.sendSummoner() }
     }
 
@@ -72,8 +73,8 @@ export default class SummonerScreen extends React.Component {
     }
 
     getDate = seconds => {
-        if(seconds <= 0) { return '' }
-        if(seconds <= 5) { return 'a few seconds ago' }
+        if(seconds <= 0) { return 'a few seconds ago' }
+        if(seconds <= 10) { return 'a few seconds ago' }
         else if(seconds < 60) { return seconds + ' seconds ago' }
         else if(seconds < 3600) { 
             const unit = Math.trunc(seconds / 60) == 1 ? ' minute ago' : ' minutes ago'
@@ -94,6 +95,17 @@ export default class SummonerScreen extends React.Component {
         else { return 'a long time ago'}
     }
 
+    refresh = async () => {
+        this.setState({ loading: true })
+        await this.props.screenProps.searchSummoner(this.state.data.name, true)
+        .then(async (data) => {
+            this.update(data)
+            this.setState({ loading: false, data: data })
+        }, error => {
+            console.log(error)
+        })
+    }
+    
     render() {
         let before = 0;
         if(this.state.data !== null) {
@@ -106,11 +118,18 @@ export default class SummonerScreen extends React.Component {
                 {this.state.loading && <LoadingScreen />}
                 {this.state.data !== null &&
                 <View style={{ height: 110, flexDirection: 'row' }}>
-                    <Image source={{ uri: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/' 
-                    + this.state.data.profileIconId + '.jpg', width: 80, height: 80 }} style={{ borderRadius: 40, marginTop: 15, marginLeft: 25 }}/>
+                    <Image source={{ uri: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/' + 
+                    this.state.data.profileIconId + '.jpg', width: 80, height: 80, cache: 'force-cache' }} 
+                    style={{ borderRadius: 40, marginTop: 15, marginLeft: 25 }}/>
                     <View>
                         <Text style={styles.summonerName}>{this.state.data.name}</Text>
                         <Text style={styles.lastUpdate}>Last update: {this.getDate(this.state.now - before)}</Text>
+                        <TouchableOpacity
+                            style={{ width: 80, height: 30, backgroundColor: '#3F51B5', justifyContent: 'center', alignItems: 'center', top: 5, left: 10, borderRadius: 10 }}
+                            onPress={() => this.refresh()}
+                        >
+                            <Text style={{ color: 'white', fontSize: 16, fontFamily: 'Helvetica Neue', fontWeight: '800' }}>Refresh</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>}
                 {this.state.data !== null &&
@@ -121,7 +140,6 @@ export default class SummonerScreen extends React.Component {
                         <QueueCard queue={flex3} /> 
                     </ScrollView>
                 </View>}
-                {this.state.data !== null && <Text>a</Text>}
             </View>
         );
     }
@@ -134,7 +152,6 @@ export default class SummonerScreen extends React.Component {
                 this.props.navigation.state.params.addRecent(this.state.data)
             })
             .catch((reason) => {
-                console.log(reason)
                 if(this.mounted) { this.setState({ loading: false, data: null }) } 
                 if (reason.toString().startsWith('Summoner') && this.mounted) {
                     Alert.alert(
@@ -167,7 +184,7 @@ const styles = StyleSheet.create({
         color: '#282828',
         fontFamily: 'Helvetica Neue',
         fontWeight: '600', 
-        marginTop: 30,
+        marginTop: 15,
         marginLeft: 15
     }, 
     lastUpdate: {
@@ -175,5 +192,8 @@ const styles = StyleSheet.create({
         opacity: 0.8,
         fontFamily: 'Helvetica Neue',
         fontWeight: '300'
+    },
+    refreshBtn: {
+
     }
 })

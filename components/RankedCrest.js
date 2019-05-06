@@ -18,32 +18,35 @@ export default class RankedCrest extends React.Component {
         let base = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/content/src/leagueclient/rankedcrests/'
         if (this.props.league !== 'MASTER' && this.props.league !== 'GRANDMASTER' && this.props.league !== 'CHALLENGER' && this.props.league !== 'UNRANKED') {
             return(
-                <View style={{ borderRadius: this.props.width / 2, shadowColor: 'black', shadowOpacity: 0.3, width: this.props.width, height: this.props.height }}>
-                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_base.png", width: this.props.width, height: this.props.height }} 
-                    style={{ position: 'absolute' }}/>
-                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_face.png", width: this.props.width, height: this.props.height }} 
-                    style={{ position: 'absolute' }}/>
-                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_crown_d" + div + ".png", width: this.props.width, height: this.props.height }} 
-                    style={{ position: 'absolute' }} />
+                <View style={{ borderRadius: this.props.width / 2, shadowColor: 'black', shadowOpacity: this.props.shadow ? 0.3 : 0, 
+                width: this.props.width, height: this.props.height }}>
+                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_base.png", width: this.props.width, height: this.props.height,
+                    cache: 'force-cache' }} style={{ position: 'absolute' }}/>
+                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_face.png", width: this.props.width, height: this.props.height,
+                    cache: 'force-cache' }} style={{ position: 'absolute' }}/>
+                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_crown_d" + div + ".png", width: this.props.width, height: this.props.height,
+                    cache: 'force-cache' }} style={{ position: 'absolute' }} />
                 </View>
             );
         }
         else if(this.props.league == 'UNRANKED'){
             return(
-                <View style={{ borderRadius: this.props.width / 2, shadowColor: 'black', shadowOpacity: 0.3, width: this.props.width, height: this.props.height }}>
+                <View style={{ borderRadius: this.props.width / 2, shadowColor: 'black', shadowOpacity: this.props.shadow ? 0.3 : 0, 
+                width: this.props.width, height: this.props.height }}>
                     <Image source={require('../assets/unranked.png')} style={{ width: this.props.width - 10, height: this.props.height - 10, alignSelf: 'center', top: 5 }} />
                 </View>
             );
         }
         else {
             return (
-                <View style={{ borderRadius: this.props.width / 2, shadowColor: 'black', shadowOpacity: 0.3, width: this.props.width, height: this.props.height }}>
-                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_base.png", width: this.props.width, height: this.props.height }}
-                        style={{ position: 'absolute' }} />
-                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_face.png", width: this.props.width, height: this.props.height }}
-                        style={{ position: 'absolute' }} />
-                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_crown.png", width: this.props.width, height: this.props.height }}
-                        style={{ position: 'absolute' }} />
+                <View style={{ borderRadius: this.props.width / 2, shadowColor: 'black', shadowOpacity: this.props.shadow ? 0.3 : 0, 
+                width: this.props.width, height: this.props.height }}>
+                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_base.png", width: this.props.width, height: this.props.height,
+                    cache: 'force-cache' }} style={{ position: 'absolute' }} />
+                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_face.png", width: this.props.width, height: this.props.height, 
+                    cache: 'force-cache'}} style={{ position: 'absolute' }} />
+                    <Image source={{ uri: base + league + this.props.league.toLowerCase() + "_crown.png", width: this.props.width, height: this.props.height,
+                    cache: 'force-cache' }} style={{ position: 'absolute' }} />
                 </View>
             );
         }

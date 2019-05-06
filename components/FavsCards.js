@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import SummonersCard from '../components/SummonersCard'
+import { wp, hp } from '../tools/pixel-ratio-helper'
 
 export default class FavCards extends React.Component {
     constructor(props) {
@@ -63,10 +64,10 @@ export default class FavCards extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        height: Dimensions.get('window').height * 0.29,
-        width: Dimensions.get('window').width * 0.94,
-        left: Dimensions.get('window').width * 0.03,
+        height: hp('29%'),
+        width: wp('96%'),
         top: 10,
+        left: wp('2%'),
         backgroundColor: 'transparent',
         borderColor: '#CDD0D3',
         borderWidth: 1.3,
@@ -75,9 +76,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     scrollable: {
-        height: Dimensions.get('window').height * 0.29,
-        width: Dimensions.get('window').width,
-        left: Dimensions.get('window').width * 0.03,
+        height: hp('29%'),
+        width: wp('98%'),
+        left: wp('1%'),
         top: 10
     }
 })

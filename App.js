@@ -5,6 +5,10 @@ import * as firebase from 'firebase'
 import 'firebase/firestore'
 import LoadingScreen from './screens/LoadingScreen';
 import AppContainer from './components/AppContainer'
+import { configure } from './tools/ReactotronConfig';
+if(__DEV__) {
+  configure()
+}
 
 export default class App extends React.Component {
   constructor(props) {
@@ -86,7 +90,7 @@ export default class App extends React.Component {
     this.setState({ isContentLoaded: true })
   }
 
-  async searchSummoner(summonerName) { //FIXME: do TODOs!!!
+  searchSummoner = async (summonerName, update = false) => { //FIXME: do TODOs!!!
     return new Promise((resolve, reject) => {
       let now = 0;
       fetch('http://worldtimeapi.org/api/timezone/America/New_York').then(response => {
@@ -95,7 +99,7 @@ export default class App extends React.Component {
       const firestore = !firebase.apps.length ? firebase.initializeApp(config).firestore() : firebase.app().firestore();
       let firestoreCollection = firestore.collection('users-' + this.state.server.toLowerCase())
       firestoreCollection.doc(summonerName.toLowerCase()).get().then(doc => {
-        if (doc.exists) { // Document exists in Firesotre, don't have to fetch from Riot API
+        if (doc.exists && !update) { // Document exists in Firesotre, don't have to fetch from Riot API
           resolve(doc.data())
         }
         else { // Document doesn't exists in Firestore, have to fetch from Riot API

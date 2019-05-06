@@ -37,8 +37,7 @@ export default class AppContainer extends React.Component {
             initialRouteName: 'Home',
             tabBarOptions: {
                 activeTintColor: this.props.screenProps.theme,
-                labelStyle: { fontWeight: '600', top: 1 },
-                
+                labelStyle: { fontWeight: '600', top: 1 },    
             },
             defaultNavigationOptions: ({ navigation }) => ({
                 tabBarIcon: ({ focused, horizontal, tintColor }) => {

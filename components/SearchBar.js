@@ -1,7 +1,6 @@
 import React from 'react'
-import { View, TextInput, StyleSheet, Dimensions, Keyboard, Alert } from 'react-native'
+import { View, TextInput, StyleSheet, Dimensions } from 'react-native'
 import { Button } from 'react-native-elements'
-import LoadingScreen from '../screens/LoadingScreen';
 
 export default class SearchBar extends React.Component {
     constructor(props) {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Header, Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import { Text, Dimensions, ActionSheetIOS } from 'react-native'
+import { ActionSheetIOS } from 'react-native'
 
 export default class AppHeader extends React.Component {
     constructor(props) {

@@ -1,7 +1,8 @@
 import React from 'react'
-import { ScrollView, View, Text, StyleSheet, Dimensions } from 'react-native'
+import { ScrollView, View, Text, StyleSheet } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import SummonersCard from './SummonersCard'
+import { wp, hp } from '../tools/pixel-ratio-helper'
 
 export default class RecentCards extends React.Component {
     constructor(props) {
@@ -30,27 +31,27 @@ export default class RecentCards extends React.Component {
                 <View style={styles.scrollable}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={scrollable} contentInset={{ right: 20 }}>
                         <View>
-                            <SummonersCard summoner={this.props.cards[0]} navigation={this.props.navigation} />
+                            <SummonersCard summoner={this.props.cards[0]} navigation={this.props.navigation} updateSummoner={this.props.updateSummoner} />
                             {this.props.cards.length >= 2 && 
-                            <SummonersCard summoner={this.props.cards[1]} navigation={this.props.navigation} />}
+                            <SummonersCard summoner={this.props.cards[1]} navigation={this.props.navigation} updateSummoner={this.props.updateSummoner} />}
                         </View>
                         {this.props.cards.length > 2 && 
                         <View>
-                            <SummonersCard summoner={this.props.cards[2]} navigation={this.props.navigation} />
+                            <SummonersCard summoner={this.props.cards[2]} navigation={this.props.navigation} updateSummoner={this.props.updateSummoner} />
                             {this.props.cards.length >= 4 && 
-                            <SummonersCard summoner={this.props.cards[3]} navigation={this.props.navigation} />}
+                            <SummonersCard summoner={this.props.cards[3]} navigation={this.props.navigation} updateSummoner={this.props.updateSummoner} />}
                         </View>}
                         {this.props.cards.length > 4 && 
                         <View>
-                            <SummonersCard summoner={this.props.cards[4]} navigation={this.props.navigation} />
+                            <SummonersCard summoner={this.props.cards[4]} navigation={this.props.navigation} updateSummoner={this.props.updateSummoner} />
                             {this.props.cards.length >= 6 && 
-                            <SummonersCard summoner={this.props.cards[5]} navigation={this.props.navigation} />}
+                            <SummonersCard summoner={this.props.cards[5]} navigation={this.props.navigation} updateSummoner={this.props.updateSummoner} />}
                         </View>}
                         {this.props.cards.length > 6 && 
                         <View>
-                            <SummonersCard summoner={this.props.cards[6]} navigation={this.props.navigation} />
+                            <SummonersCard summoner={this.props.cards[6]} navigation={this.props.navigation} updateSummoner={this.props.updateSummoner} />
                             {this.props.cards.length >= 8 &&
-                            <SummonersCard summoner={this.props.cards[7]} navigation={this.props.navigation} />}
+                            <SummonersCard summoner={this.props.cards[7]} navigation={this.props.navigation} updateSummoner={this.props.updateSummoner} />}
                         </View>}
                     </ScrollView>
                 </View>
@@ -61,10 +62,10 @@ export default class RecentCards extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        height: Dimensions.get('window').height * 0.29,
-        width: Dimensions.get('window').width * 0.94,
-        left: Dimensions.get('window').width * 0.03,
+        height: hp('29%'),
+        width: wp('96%'),
         top: 0,
+        left: wp('2%'),
         backgroundColor: 'transparent',
         borderColor: '#CDD0D3',
         borderWidth: 1.3,
@@ -73,9 +74,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     scrollable: {
-        height: Dimensions.get('window').height * 0.29,
-        width: Dimensions.get('window').width,
-        left: Dimensions.get('window').width * 0.03,
-        top: 0
+        height: hp('29%'),
+        width: wp('98%'),
+        top: 0,
+        left: wp('2%'),
     } 
 })
