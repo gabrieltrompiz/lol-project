@@ -13,7 +13,6 @@ export default class HomeScreen extends React.Component {
         this.updateSummoner = this.updateSummoner.bind(this)
         this.handleAddFav = this.handleAddFav.bind(this)
         this.handleRemoveFav = this.handleRemoveFav.bind(this)
-        AsyncStorage.removeItem('FAVS')
     }
 
     componentDidMount = () => {
@@ -95,6 +94,7 @@ export default class HomeScreen extends React.Component {
 
     handleRemoveFav = (summonerCopy) => {
         const summoner = Object.assign({}, summonerCopy)
+        console.log('remove fav:' + summoner.name)
         let favs = [...this.state.favs]
         favs.forEach((item, i) => {
             if(summoner.name === item.name) { favs.splice(i, 1) }

@@ -61,6 +61,13 @@ export default class SummonersCard extends React.Component {
             <View>
                 <TouchableOpacity style={styles.container} onPress={() => this.props.navigation.navigate('Summoner', { "profile": this.props.summoner, "update": this.props.updateSummoner, 
                 'favs': this.props.favs, 'addFav': this.props.addFav, 'removeFav': this.props.removeFav })}>
+                    {this.props.fav &&
+                    <TouchableOpacity
+                        style={{ width: 40, height: 40, position: 'absolute', right: -10, top: 10}}
+                        onPress={() => this.props.removeFav(this.props.summoner)} 
+                    >
+                        <Icon name='star' size={20} color='red' />
+                    </TouchableOpacity>}
                     <Image source={{ uri: source, width: 40, height: 40, cache: 'force-cache' }} style={{ borderRadius: 20 }}/>
                     <Text style={{ fontWeight: '800', fontSize: 16, fontFamily: 'Helvetica Neue' }}>{this.props.summoner.summonerLevel}</Text>
                     <Text style={{ fontWeight: '500', fontFamily: 'Helvetica Neue' }} >{this.props.summoner.name}</Text>
