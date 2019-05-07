@@ -5,10 +5,6 @@ import * as firebase from 'firebase'
 import 'firebase/firestore'
 import LoadingScreen from './screens/LoadingScreen';
 import AppContainer from './components/AppContainer'
-import { configure } from './tools/ReactotronConfig';
-if(__DEV__) {
-  configure()
-}
 
 export default class App extends React.Component {
   constructor(props) {

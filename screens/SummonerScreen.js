@@ -10,17 +10,28 @@ export default class SummonerScreen extends React.Component {
         super(props)
         this.summonerName = this.props.navigation.getParam('summoner', '')
         this.profile = this.props.navigation.getParam('profile', null)
-        this.update = this.props.navigation.getParam('update', () => { console.log('Error') })
-        this.state = { loading: false, data: this.profile, now: 0 }
+        this.update = this.props.navigation.getParam('update', () => {})
+        this.favs = this.props.navigation.getParam('favs', [])
+        this.addFav = this.props.navigation.getParam('addFav', () => {})
+        this.removeFav = this.props.navigation.getParam('removeFav', () => {})
+        this.state = { loading: false, data: this.profile, now: 0, fav: false }
+        this.mounted = false;
     }
 
     componentDidMount = () => {
         this.mounted = true;
-        fetch('http://worldtimeapi.org/api/timezone/America/New_York').then(response => {
-                response.json().then(data => { this.setState({ now: data.unixtime }) })
-        })
+        fetch('http://worldtimeapi.org/api/timezone/America/New_York')
+        .then(response => response.json())
+        .then(data => { this.mounted && this.setState({ now: data.unixtime }) })
         .catch(() => console.log('Timezone fetch error'))
         if(this.state.data === null) { this.sendSummoner() }
+        this.favs.some((fav, i) => {
+            if(fav.name === this.state.data.name) {
+                this.setState({ fav: true })
+                return true
+            }
+            return false;
+        })
     }
 
     componentWillUnmount = () => {
@@ -73,7 +84,7 @@ export default class SummonerScreen extends React.Component {
     }
 
     getDate = seconds => {
-        if(seconds <= 0) { return 'a few seconds ago' }
+        if(seconds < 0) { return 'fetching...' }
         if(seconds <= 10) { return 'a few seconds ago' }
         else if(seconds < 60) { return seconds + ' seconds ago' }
         else if(seconds < 3600) { 
@@ -98,11 +109,22 @@ export default class SummonerScreen extends React.Component {
     refresh = async () => {
         this.setState({ loading: true })
         await this.props.screenProps.searchSummoner(this.state.data.name, true)
-        .then(async (data) => {
+        .then(data => {
             this.update(data)
-            this.setState({ loading: false, data: data })
+            this.mounted && this.setState({ loading: false, data: data })
         }, error => {
             console.log(error)
+        })
+    }
+
+    toggleFav = () => {
+        this.setState({ fav: !this.state.fav }, () => {
+            if(this.state.fav) {
+                this.addFav(this.state.data)
+            }
+            else {
+                this.removeFav(this.state.data)
+            }
         })
     }
     
@@ -114,7 +136,7 @@ export default class SummonerScreen extends React.Component {
         }
         return (
             <View style={styles.container}>
-                <AppHeader theme={this.props.screenProps.theme} title='Summoner' showBack navigation={this.props.navigation}/>
+                <AppHeader theme={this.props.screenProps.theme} title='Summoner' showFav navigation={this.props.navigation} fav={this.state.fav} toggleFav={this.toggleFav}/>
                 {this.state.loading && <LoadingScreen />}
                 {this.state.data !== null &&
                 <View style={{ height: 110, flexDirection: 'row' }}>

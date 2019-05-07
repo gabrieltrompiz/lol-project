@@ -11,6 +11,9 @@ export default class HomeScreen extends React.Component {
         super(props)
         this.state = { recent: [], favs: [] } // Default state
         this.updateSummoner = this.updateSummoner.bind(this)
+        this.handleAddFav = this.handleAddFav.bind(this)
+        this.handleRemoveFav = this.handleRemoveFav.bind(this)
+        AsyncStorage.removeItem('FAVS')
     }
 
     componentDidMount = () => {
@@ -29,12 +32,12 @@ export default class HomeScreen extends React.Component {
         let favs = [...this.state.favs]
         recent.forEach((item, i) => {
             if(summoner.name === item.name) {
-                recent[i] = summoner
+                recent[i] = Object.assign({}, summoner)
             }
         })
         favs.forEach((item, i) => {
             if(summoner.name === item.name) {
-                favs[i] = summoner
+                favs[i] = Object.assign({}, summoner)
             }
         })
         this.setState({ recent: recent, favs: favs }, () => {
@@ -43,7 +46,8 @@ export default class HomeScreen extends React.Component {
         })
     }
 
-    handleAddRecent = summoner => {
+    handleAddRecent = summonerCopy => {
+        const summoner = Object.assign({}, summonerCopy)
         let recent = [...this.state.recent] // Creates clone of state array
         let exists = false;
         let index = -1;
@@ -79,17 +83,18 @@ export default class HomeScreen extends React.Component {
         )
     }
 
-    handleAddFav = async (summoner) => {
+    handleAddFav = async (summonerCopy) => {
+        const summoner = Object.assign({}, summonerCopy)
+        console.log('add fav:' + summoner.name)
         let favs = [...this.state.favs]
-        favs.forEach(item => {
-            if(summoner.name === item.name) { return; }
-        })
         favs.push(summoner)
-        await AsyncStorage.setItem('FAVS', JSON.stringify(this.state.favs))
-        this.setState({ favs: favs })
+        this.setState({ favs: favs }, () => {
+            AsyncStorage.setItem('FAVS', JSON.stringify(this.state.favs))
+        })
     }
 
-    handleRemoveFav = (summoner) => {
+    handleRemoveFav = (summonerCopy) => {
+        const summoner = Object.assign({}, summonerCopy)
         let favs = [...this.state.favs]
         favs.forEach((item, i) => {
             if(summoner.name === item.name) { favs.splice(i, 1) }
@@ -104,7 +109,7 @@ export default class HomeScreen extends React.Component {
             <View style={styles.container}>
                 <AppHeader theme={this.props.screenProps.theme} title='League of Legends' 
                 showServer server={this.props.screenProps.server} changeServer={this.props.screenProps.changeServer}/>
-                <SearchBar navigation={this.props.navigation} addRecent={this.handleAddRecent}/>
+                <SearchBar navigation={this.props.navigation} addRecent={this.handleAddRecent} favs={this.state.favs} handleAddFav={this.handleAddFav} handleRemoveFav={this.handleRemoveFav}/>
                 <View style={{ alignSelf: 'flex-start' }}>
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.recentText}>Recent Search</Text>
@@ -115,9 +120,11 @@ export default class HomeScreen extends React.Component {
                             <Text style={{ fontSize: 20, fontWeight: '200', fontFamily: 'Helvetica Neue' }}>Clear</Text>
                         </TouchableOpacity>
                     </View>
-                    <RecentCards cards={this.state.recent} favs={this.state.favs} addFav={this.handleAddFav} navigation={this.props.navigation} updateSummoner={this.updateSummoner}/>
+                    <RecentCards cards={this.state.recent} favs={this.state.favs} navigation={this.props.navigation} updateSummoner={this.updateSummoner}
+                    handleAddFav={this.handleAddFav} handleRemoveFav={this.handleRemoveFav}/>
                     <Text style={styles.favText}>Favorites</Text> 
-                    <FavCards cards={this.state.favs} />
+                    <FavCards cards={this.state.favs} favs={this.state.favs} navigation={this.props.navigation} updateSummoner={this.updateSummoner}
+                    handleAddFav={this.handleAddFav} handleRemoveFav={this.handleRemoveFav}/>
                 </View>
             </View>
         );

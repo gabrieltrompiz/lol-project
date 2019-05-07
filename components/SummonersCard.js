@@ -59,18 +59,8 @@ export default class SummonersCard extends React.Component {
         let league = queue.league
         return(
             <View>
-                <TouchableOpacity style={styles.container} onPress={() => this.props.navigation.navigate('Summoner', { "profile": this.props.summoner, "update": this.props.updateSummoner })}>
-                    {this.props.fav &&
-                    <Button
-                        title=''
-                        icon={
-                            <Icon name='star' size={20} color='red' />
-                        }
-                        buttonStyle={{ width: 25, height: 25, position: 'absolute', left: wp('15%'), backgroundColor: 'transparent', top: -5 }}
-                        onPress={() => {
-                            if(!this.state.fav) { this.setState({ fav: true }, () => this.props.addFav(this.props.summoner)) }
-                        }}
-                    />}
+                <TouchableOpacity style={styles.container} onPress={() => this.props.navigation.navigate('Summoner', { "profile": this.props.summoner, "update": this.props.updateSummoner, 
+                'favs': this.props.favs, 'addFav': this.props.addFav, 'removeFav': this.props.removeFav })}>
                     <Image source={{ uri: source, width: 40, height: 40, cache: 'force-cache' }} style={{ borderRadius: 20 }}/>
                     <Text style={{ fontWeight: '800', fontSize: 16, fontFamily: 'Helvetica Neue' }}>{this.props.summoner.summonerLevel}</Text>
                     <Text style={{ fontWeight: '500', fontFamily: 'Helvetica Neue' }} >{this.props.summoner.name}</Text>

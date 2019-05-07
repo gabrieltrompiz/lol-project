@@ -5,7 +5,7 @@ import { Button } from 'react-native-elements'
 export default class SearchBar extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { summonerName: ''}
+        this.state = { summonerName: '' }
     }
 
     render() {
@@ -16,7 +16,8 @@ export default class SearchBar extends React.Component {
                     placeholder='Summoner Search'
                     placeholderTextColor='#97A0A7'
                     returnKeyType='search'
-                    onSubmitEditing={() => this.props.navigation.navigate('Summoner', { summoner: this.state.summonerName, addRecent: this.props.addRecent })}
+                    onSubmitEditing={() => this.props.navigation.navigate('Summoner', { "summoner": this.state.summonerName, "addRecent": this.props.addRecent, "favs": this.props.favs,
+                    "addFav": this.props.handleAddFav, "removeFav": this.props.handleRemoveFav })}
                     multiline={false}
                     style={styles.textInput}
                     onChangeText={ (textInput) => this.setState({ summonerName: textInput })}
@@ -29,7 +30,8 @@ export default class SearchBar extends React.Component {
                     }}
                     title=''
                     buttonStyle={styles.button}
-                    onPress={() => this.props.navigation.navigate('Summoner', { summoner: this.state.summonerName, addRecent: this.props.addRecent })}
+                    onPress={() => this.props.navigation.navigate('Summoner', { "summoner": this.state.summonerName, "addRecent": this.props.addRecent, "favs": this.props.favs,
+                    "addFav": this.props.handleAddFav, "removeFav": this.props.handleRemoveFav })}
                 />
             </View>
         );

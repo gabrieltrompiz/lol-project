@@ -91,6 +91,49 @@ export default class AppHeader extends React.Component {
                 />
             );
         }
+        else if(this.props.showFav) {
+            return(
+                <Header
+                    leftComponent={
+                        <Button
+                            title=''
+                            icon={
+                                <Icon
+                                    name="arrow-left"
+                                    color='white'
+                                    size={22}
+                                />
+                            }
+                            buttonStyle={{ backgroundColor: 'transparent', elevation: 0, left: 5 }}
+                            onPress={() => this.props.navigation.goBack()}
+                        />
+                    }
+                    centerComponent={{
+                        text: this.props.title, style: { color: 'white', fontSize: 22, fontWeight: '600', fontFamily: 'Helvetica Neue' }
+                    }}
+                    rightComponent={
+                        <Button 
+                            title=''
+                            icon={
+                                <Icon 
+                                    name={this.props.fav ? 'star' : 'star-outline'}
+                                    color='white'
+                                    size={20}
+                                />
+                            }
+                            buttonStyle={{ backgroundColor: 'transparent', elevation: 0, left: 5 }}
+                            onPress={() => this.props.toggleFav()}
+                        />
+                    }
+                    containerStyle={{
+                        height: 100,
+                        backgroundColor: this.props.theme,
+                        borderBottomColor: '#EFEFF0',
+                        borderBottomWidth: 1
+                    }}
+                />
+            );
+        }
         else {
             return(
                 <Header
