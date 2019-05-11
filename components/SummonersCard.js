@@ -63,7 +63,7 @@ export default class SummonersCard extends React.Component {
                 'favs': this.props.favs, 'addFav': this.props.addFav, 'removeFav': this.props.removeFav })}>
                     {this.props.fav &&
                     <TouchableOpacity
-                        style={{ width: 40, height: 40, position: 'absolute', right: -10, top: 10}}
+                        style={{ width: 40, height: 40, position: 'absolute', right: -10, top: 10 }}
                         onPress={() => this.props.removeFav(this.props.summoner)} 
                     >
                         <Icon name='star' size={20} color='red' />

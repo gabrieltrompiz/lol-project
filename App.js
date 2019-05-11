@@ -123,24 +123,33 @@ export default class App extends React.Component {
                 .then(response => {
                   if(response.status === 200) {
                     response.json().then(data2 => {
-                      firestoreCollection.doc(summonerName.toLowerCase()).set({
-                        accountId: data.accountId,
-                        id: data.id,
-                        profileIconId: data.profileIconId,
-                        puuid: data.puuid,
-                        revisionDate: data.revisionDate,
-                        summonerLevel: data.summonerLevel,
-                        name: data.name,
-                        q3: typeof data2[2] !== 'undefined' ? { "league": data2[2].tier, "rank": data2[2].rank, "lp": data2[2].leaguePoints, 
-                          "wins": data2[2].wins, "losses": data2[2].losses, "queue": data2[2].queueType } : { "league": "UNRANKED", "rank": "0" },
-                        q2: typeof data2[1] !== 'undefined' ? {"league": data2[1].tier, "rank": data2[1].rank, "lp": data2[1].leaguePoints, 
-                          "wins": data2[1].wins, "losses": data2[1].losses, "queue": data2[1].queueType } : { "league": "UNRANKED", "rank": "0" },
-                        q1: typeof data2[0] !== 'undefined' ? { "league": data2[0].tier, "rank": data2[0].rank, "lp": data2[0].leaguePoints, 
-                          "wins": data2[0].wins, "losses": data2[0].losses, "queue": data2[0].queueType } : { "league": "UNRANKED", "rank": "0" },
-                        timestamp: now
+                      fetch('https://' + endpoint + '.api.riotgames.com/lol/match/v4/matchlists/by-account/' + encodeURI(data.accountId) + '?api_key=' + riotApiKey,
+                      { headers: { "X-Riot-Token": riotApiKey, "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8", "Accept-Language": "en-US,en;q=0.9" } })
+                      .then(response => {
+                        if(response.status === 200) {
+                          response.json().then(data3 => {
+                            firestoreCollection.doc(summonerName.toLowerCase()).set({
+                              accountId: data.accountId,
+                              id: data.id,
+                              profileIconId: data.profileIconId,
+                              puuid: data.puuid,
+                              revisionDate: data.revisionDate,
+                              summonerLevel: data.summonerLevel,
+                              name: data.name,
+                              q3: typeof data2[2] !== 'undefined' ? { "league": data2[2].tier, "rank": data2[2].rank, "lp": data2[2].leaguePoints, 
+                                "wins": data2[2].wins, "losses": data2[2].losses, "queue": data2[2].queueType } : { "league": "UNRANKED", "rank": "0" },
+                              q2: typeof data2[1] !== 'undefined' ? {"league": data2[1].tier, "rank": data2[1].rank, "lp": data2[1].leaguePoints, 
+                                "wins": data2[1].wins, "losses": data2[1].losses, "queue": data2[1].queueType } : { "league": "UNRANKED", "rank": "0" },
+                              q1: typeof data2[0] !== 'undefined' ? { "league": data2[0].tier, "rank": data2[0].rank, "lp": data2[0].leaguePoints, 
+                                "wins": data2[0].wins, "losses": data2[0].losses, "queue": data2[0].queueType } : { "league": "UNRANKED", "rank": "0" },
+                              timestamp: now,
+                              matches: data3
+                            })
+                            .then(() => firestoreCollection.doc(summonerName.toLowerCase()).get().then(doc => resolve(doc.data()))) // Send data through resolve()
+                            .catch((error) => { reject('Firebase Error: Writing doc: ' + error) })
+                          })
+                        }
                       })
-                      .then(() => firestoreCollection.doc(summonerName.toLowerCase()).get().then(doc => resolve(doc.data()))) // Send data through resolve()
-                      .catch((error) => { reject('Firebase Error: Writing doc: ' + error) })
                     })
                   }
                 })

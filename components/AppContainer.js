@@ -13,6 +13,31 @@ export default class AppContainer extends React.Component {
         super(props)
     }
 
+    componentDidMount = async () => {
+        await fetch('https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json')
+        .then(response => {
+            if(response.status === 200) { 
+                response.json()
+                .then(data => {
+                    this.props.screenProps.perks = data
+                })
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+        await fetch('https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/queues.json')
+        .then(response => {
+            if(response.status === 200) { 
+                response.json()
+                .then(data => {
+                    this.props.screenProps.queues = data
+                })
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
     render() {
         const HomeStack = createStackNavigator({ // HomeScreen stack navigator
             Home: HomeScreen,

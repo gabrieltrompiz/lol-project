@@ -1,8 +1,10 @@
 import React from 'react'
-import { View, Text, Alert, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, AsyncStorage } from 'react-native'
+import { View, Text, Alert, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity } from 'react-native'
 import AppHeader from '../components/AppHeader'
 import LoadingScreen from './LoadingScreen'
 import QueueCard from '../components/QueueCard'
+import MatchCard from '../components/MatchCard'
+import * as firebase from 'firebase'
 import 'firebase/firestore';
 
 export default class SummonerScreen extends React.Component {
@@ -14,23 +16,77 @@ export default class SummonerScreen extends React.Component {
         this.favs = this.props.navigation.getParam('favs', [])
         this.addFav = this.props.navigation.getParam('addFav', () => {})
         this.removeFav = this.props.navigation.getParam('removeFav', () => {})
-        this.state = { loading: false, data: this.profile, now: 0, fav: false }
+        this.state = { loading: false, data: this.profile, now: 0, fav: false, matches: this.profile === null ? [] : this.profile.matches.matches, showing: 20 }
         this.mounted = false;
+        this.perks = this.props.screenProps.perks
+        this.queues = this.props.screenProps.queues
     }
 
-    componentDidMount = () => {
+    componentDidMount = async () => {
         this.mounted = true;
         fetch('http://worldtimeapi.org/api/timezone/America/New_York')
         .then(response => response.json())
         .then(data => { this.mounted && this.setState({ now: data.unixtime }) })
         .catch(() => console.log('Timezone fetch error'))
-        if(this.state.data === null) { this.sendSummoner() }
+        if(this.state.data === null) { console.log('null data'); await this.sendSummoner() }
         this.favs.some((fav, i) => {
             if(fav.name === this.state.data.name) {
                 this.setState({ fav: true })
                 return true
             }
             return false;
+        })
+        this.setState({ loading: true })
+        await Promise.all(this.state.matches.slice(0, this.state.showing).map(match => {
+            return this.fetchMatches(match)
+        }))
+        .then(result => {
+            console.log(result.length)
+            this.mounted && this.setState({ matches: result, loading: false })
+        })
+    }
+
+    fetchMatches = async (match) => {
+        return new Promise((resolve, reject) => {
+            const firestore = !firebase.apps.length ? firebase.initializeApp(config).firestore() : firebase.app().firestore();
+            let firestoreCollection = firestore.collection('matches-' + this.props.screenProps.server.toLowerCase())
+            firestoreCollection.doc(match.gameId.toString()).get().then(async (doc) => {
+                if(doc.exists) {
+                    match.data = doc.data()
+                    resolve(match)
+                }
+                else {
+                    let endpoint; // Endpoint for fetch URL
+                    switch (this.props.screenProps.server) {
+                        case 'NA': endpoint = 'na1'; break;
+                        case 'LAN': endpoint = 'la1'; break;
+                        case 'LAS': endpoint = 'la2'; break;
+                        case 'KR': endpoint = 'kr'; break;
+                        case 'BR': endpoint = 'br1'; break;
+                        case 'RU': endpoint = 'ru'; break;
+                        case 'OCE': endpoint = 'oc1'; break;
+                        case 'JP': endpoint = 'jp1'; break;
+                        case 'EUN': endpoint = 'eun1'; break;
+                        case 'EUW': endpoint = 'euw1'; break;
+                        case 'TR': endpoint = 'tr1'; break;
+                    }
+                    await fetch('https://' + endpoint + '.api.riotgames.com/lol/match/v4/matches/' + match.gameId + '?api_key=' + riotApiKey,
+                    { headers: { "X-Riot-Token": riotApiKey, "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8", "Accept-Language": "en-US,en;q=0.9" } })
+                    .then(response => {
+                        if(response.status === 200 ) {
+                            response.json().then(data => {
+                                firestoreCollection.doc(match.gameId.toString()).set(data)
+                                .then(() => { match.data = data; resolve(match) })
+                                .catch((error) => { console.log('Firebase Error: Writing doc: ' + error) })
+                            })
+                        }
+                        else {
+                            console.log(response.status)
+                        }
+                    })
+                    .catch(err => console.log("Error fetching match data."))
+                }
+            }).catch(err => console.log("Firebase Error: " + err))
         })
     }
 
@@ -111,9 +167,15 @@ export default class SummonerScreen extends React.Component {
         await this.props.screenProps.searchSummoner(this.state.data.name, true)
         .then(data => {
             this.update(data)
-            this.mounted && this.setState({ loading: false, data: data })
+            this.mounted && this.setState({ loading: false, data: data, matches: data.matches.matches })
         }, error => {
             console.log(error)
+        })
+        await Promise.all(this.state.matches.slice(0, this.state.showing).map(match => {
+            return this.fetchMatches(match)
+        }))
+        .then(result => {
+            this.mounted && this.setState({ matches: result })
         })
     }
 
@@ -138,6 +200,7 @@ export default class SummonerScreen extends React.Component {
             <View style={styles.container}>
                 <AppHeader theme={this.props.screenProps.theme} title='Summoner' showFav navigation={this.props.navigation} fav={this.state.fav} toggleFav={this.toggleFav}/>
                 {this.state.loading && <LoadingScreen />}
+                <ScrollView  alwaysBounceVertical showsVerticalScrollIndicator={false}>
                 {this.state.data !== null &&
                 <View style={{ height: 110, flexDirection: 'row' }}>
                     <Image source={{ uri: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/' + 
@@ -162,15 +225,22 @@ export default class SummonerScreen extends React.Component {
                         <QueueCard queue={flex3} /> 
                     </ScrollView>
                 </View>}
+                {this.state.matches[0].hasOwnProperty('data') && this.state.matches.map((match, i) => {
+                    if(match.hasOwnProperty('data')) {
+                        return <MatchCard key={i} match={match} summoner={this.profile.name} now={this.state.now} perks={this.perks} queues={this.queues}/>
+                    }
+                })}
+                </ScrollView>
             </View>
         );
     }
 
     sendSummoner = async () => {
         if(this.summonerName !== '' && this.mounted) {
+            console.log('sending summoner: ' + this.summonerName)
             this.setState({ loading: true })
             this.props.screenProps.searchSummoner(this.summonerName).then((data) => {
-                if(this.mounted) { this.setState({ loading: false, data: data }) }
+                if(this.mounted) { this.setState({ loading: false, data: data, matches: data.matches.matches }, () => console.log(data)) }
                 this.props.navigation.state.params.addRecent(this.state.data)
             })
             .catch((reason) => {
@@ -219,3 +289,14 @@ const styles = StyleSheet.create({
 
     }
 })
+
+const CONFIG = require('../config.json')
+const config = { // Firebase config
+    apiKey: CONFIG.apiKey,
+    authDomain: CONFIG.authDomain,
+    databaseURL: CONFIG.databaseURL,
+    projectId: CONFIG.projectId,
+    storageBucket: CONFIG.storageBucket,
+    messagingSenderId: CONFIG.messagingSenderId
+};
+const riotApiKey = CONFIG.riotApiKey //Permanent Riot API key
