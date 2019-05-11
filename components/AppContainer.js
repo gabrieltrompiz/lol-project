@@ -36,6 +36,17 @@ export default class AppContainer extends React.Component {
         }).catch(err => {
             console.log(err)
         })
+        await fetch('https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/items.json')
+        .then(response => {
+            if(response.status === 200) { 
+                response.json()
+                .then(data => {
+                    this.props.screenProps.items = data
+                })
+            }
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     render() {

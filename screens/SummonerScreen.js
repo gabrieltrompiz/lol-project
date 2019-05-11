@@ -20,15 +20,23 @@ export default class SummonerScreen extends React.Component {
         this.mounted = false;
         this.perks = this.props.screenProps.perks
         this.queues = this.props.screenProps.queues
+        this.items = this.props.screenProps.items
     }
-
+    
     componentDidMount = async () => {
         this.mounted = true;
+        if(this.state.data === null) {
+            await this.sendSummoner().then(async () => { await this._init() })
+        } else {
+            await this._init()
+        }
+    }
+
+    _init = async () => {
         fetch('http://worldtimeapi.org/api/timezone/America/New_York')
         .then(response => response.json())
         .then(data => { this.mounted && this.setState({ now: data.unixtime }) })
         .catch(() => console.log('Timezone fetch error'))
-        if(this.state.data === null) { console.log('null data'); await this.sendSummoner() }
         this.favs.some((fav, i) => {
             if(fav.name === this.state.data.name) {
                 this.setState({ fav: true })
@@ -167,7 +175,7 @@ export default class SummonerScreen extends React.Component {
         await this.props.screenProps.searchSummoner(this.state.data.name, true)
         .then(data => {
             this.update(data)
-            this.mounted && this.setState({ loading: false, data: data, matches: data.matches.matches })
+            this.mounted && this.setState({ data: data, matches: data.matches.matches, now: data.timestamp })
         }, error => {
             console.log(error)
         })
@@ -175,7 +183,7 @@ export default class SummonerScreen extends React.Component {
             return this.fetchMatches(match)
         }))
         .then(result => {
-            this.mounted && this.setState({ matches: result })
+            this.mounted && this.setState({ matches: result, loading: false })
         })
     }
 
@@ -225,9 +233,9 @@ export default class SummonerScreen extends React.Component {
                         <QueueCard queue={flex3} /> 
                     </ScrollView>
                 </View>}
-                {this.state.matches[0].hasOwnProperty('data') && this.state.matches.map((match, i) => {
+                {this.state.matches.length > 0 && this.state.matches.map((match, i) => {
                     if(match.hasOwnProperty('data')) {
-                        return <MatchCard key={i} match={match} summoner={this.profile.name} now={this.state.now} perks={this.perks} queues={this.queues}/>
+                        return <MatchCard key={i} match={match} summoner={this.state.data.name} now={this.state.now} perks={this.perks} queues={this.queues} items={this.items}/>
                     }
                 })}
                 </ScrollView>
@@ -236,32 +244,36 @@ export default class SummonerScreen extends React.Component {
     }
 
     sendSummoner = async () => {
-        if(this.summonerName !== '' && this.mounted) {
-            console.log('sending summoner: ' + this.summonerName)
-            this.setState({ loading: true })
-            this.props.screenProps.searchSummoner(this.summonerName).then((data) => {
-                if(this.mounted) { this.setState({ loading: false, data: data, matches: data.matches.matches }, () => console.log(data)) }
-                this.props.navigation.state.params.addRecent(this.state.data)
-            })
-            .catch((reason) => {
-                if(this.mounted) { this.setState({ loading: false, data: null }) } 
-                if (reason.toString().startsWith('Summoner') && this.mounted) {
-                    Alert.alert(
-                        'Summoner not found',
-                        'Please check the summoner name and the selected server.',
-                        { text: 'OK' },
-                        { cancelable: false })
-                }
-                else if (this.mounted) {
-                    Alert.alert(
-                        'Network Error',
-                        'Please check your internet connection and try again.',
-                        { text: 'OK' },
-                        { cancelable: false })
-                }
-                this.props.navigation.goBack()
-            })
-        }
+        return new Promise((resolve, reject) => {
+            if(this.summonerName !== '' && this.mounted) {
+                this.setState({ loading: true })
+                this.props.screenProps.searchSummoner(this.summonerName).then((data) => {
+                    if(this.mounted) { this.setState({ loading: false, data: data, matches: data.matches.matches }, () => { 
+                        this.props.navigation.state.params.addRecent(this.state.data) 
+                        resolve()
+                    }) }
+                })
+                .catch((reason) => {
+                    if(this.mounted) { this.setState({ loading: false, data: null }) } 
+                    if (reason.toString().startsWith('Summoner') && this.mounted) {
+                        Alert.alert(
+                            'Summoner not found',
+                            'Please check the summoner name and the selected server.',
+                            { text: 'OK' },
+                            { cancelable: false })
+                    }
+                    else if (this.mounted) {
+                        Alert.alert(
+                            'Network Error',
+                            'Please check your internet connection and try again.',
+                            { text: 'OK' },
+                            { cancelable: false })
+                    }
+                    reject()
+                    this.props.navigation.goBack()
+                })
+            }
+        })
     }
 }
 

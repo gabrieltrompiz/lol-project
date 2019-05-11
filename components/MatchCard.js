@@ -22,16 +22,31 @@ export default class MatchCard extends React.Component {
         this.state = { champSrc: '' }
         this.props.perks.forEach((perk) => {
             if(perk.id === this.stats.perk0) { this.perk0 = perk }
-            if(perk.id === this.stats.perk1) { this.perk1 = perk }
-            if(perk.id === this.stats.perk2) { this.perk2 = perk }
-            if(perk.id === this.stats.perk3) { this.perk3 = perk }
-            if(perk.id === this.stats.perk4) { this.perk4 = perk }
-            if(perk.id === this.stats.perk5) { this.perk5 = perk }
+            else if(perk.id === this.stats.perk1) { this.perk1 = perk }
+            else if(perk.id === this.stats.perk2) { this.perk2 = perk }
+            else if(perk.id === this.stats.perk3) { this.perk3 = perk }
+            else if(perk.id === this.stats.perk4) { this.perk4 = perk }
+            else if(perk.id === this.stats.perk5) { this.perk5 = perk }
         })
         this.primaryBranch = this.perk0.iconPath.split('/')[6]
         this.secondaryBranch = this.perk5.iconPath.split('/')[6]
         this.perk0.iconPath2 = this.perk0.iconPath.split('/')[7]
         this.perk5.iconPath2 = this.perk5.iconPath.split('/')[7]
+        this.codes = new Map()
+        this.codes.set('Domination', '7200_domination.png')
+        this.codes.set('Precision', '7201_precision.png')
+        this.codes.set('Sorcery', '7202_sorcery.png')
+        this.codes.set('Inspiration', '7203_whimsy.png')
+        this.codes.set('Resolve', '7204_resolve.png')
+        this.items = [{id: 0}, {id: 0}, {id: 0}, {id: 0}, {id: 0}, {id: 0}]
+        this.props.items.forEach(item => {
+            if(item.id === this.stats.item0) { this.items[0] = item; this.items[0].iconPath = item.iconPath.split('/')[(item.iconPath.split('/').length) - 1] }
+            if(item.id === this.stats.item1) { this.items[1] = item; this.items[1].iconPath = item.iconPath.split('/')[(item.iconPath.split('/').length) - 1] }
+            if(item.id === this.stats.item2) { this.items[2] = item; this.items[2].iconPath = item.iconPath.split('/')[(item.iconPath.split('/').length) - 1] }
+            if(item.id === this.stats.item3) { this.items[3] = item; this.items[3].iconPath = item.iconPath.split('/')[(item.iconPath.split('/').length) - 1] }
+            if(item.id === this.stats.item4) { this.items[4] = item; this.items[4].iconPath = item.iconPath.split('/')[(item.iconPath.split('/').length) - 1] }
+            if(item.id === this.stats.item5) { this.items[5] = item; this.items[5].iconPath = item.iconPath.split('/')[(item.iconPath.split('/').length) - 1] }
+        })
     }
 
     componentDidMount = async () => {
@@ -78,8 +93,8 @@ export default class MatchCard extends React.Component {
     render() {
         const styles = this.getStyles()   
         const primaryPerk = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/styles/' + this.primaryBranch.toLowerCase() + "/" 
-        + this.perk0.iconPath2.toLowerCase() + "/" + this.perk0.iconPath2.toLowerCase() + ".png"
-        console.log(primaryPerk)
+        + this.perk0.iconPath2.toLowerCase() + "/" + (this.perk0.iconPath2.toLowerCase() === 'lethaltempo' ? 'lethaltempotemp' : this.perk0.iconPath2.toLowerCase()) + ".png"
+        const secondaryPerk = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/styles/' + this.codes.get(this.secondaryBranch)
         return(
             <View style={{ flexDirection: 'row' }}>
                 <View style={{ width: wp('2%'), height: 118, backgroundColor: this.won ? '#29B6F6' : '#FF5252', marginTop: 6, marginLeft: wp('1%') }}/>
@@ -127,11 +142,53 @@ export default class MatchCard extends React.Component {
                                 </Text>
                                 <Text>Level {this.stats.champLevel}</Text>
                             </View>
-                            <View style={{ alignSelf: 'flex-start', marginTop: 10 }}>
+                            <View style={{ top: -5, width: 45, height: 45, borderRadius: '100%', backgroundColor: '#F0F0F0', justifyContent: 'center', 
+                            alignItems: 'center' }}>
                                 <Image 
                                     source={{ uri: primaryPerk, width: 40, height: 40, cache: 'force-cache' }}
-                                    style={{ borderRadius: 20, backgroundColor: '#f0f0f0' }}
                                 />
+                                <View style={{ position: 'absolute', backgroundColor: '#E0E0E0', borderRadius: 10, width: 30, height: 30, borderRadius: '100%', justifyContent: 'center',
+                                alignItems: 'center', top: 27.5, left: 30 }}>
+                                    <Image 
+                                        source={{ uri: secondaryPerk, width: 20, height: 20, cache: 'force-cache' }}
+                                    />
+                                </View>
+                            </View>
+                            <View style={{ left: 18, width: 98, height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    {this.items.slice(0, 3).map((item, i) => {
+                                        if(item.id === 0) {
+                                            return <View style={{ width: 27, height: 27, backgroundColor: '#E0E0E0', borderRadius: 4, margin: 1 }} key={i} />
+                                        }
+                                        else {
+                                            return (
+                                                <Image 
+                                                    source={{ uri: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/data/items/icons2d/' + item.iconPath.toLowerCase(),
+                                                    width: 27, height: 27, cache: 'force-cache' }}
+                                                    style={{ borderRadius: 4, margin: 1 }}
+                                                    key={i}
+                                                />
+                                            )
+                                        }
+                                    })}
+                                </View>
+                                <View style={{ flexDirection: 'row' }}>
+                                    {this.items.slice(3).map((item, i) => {
+                                        if(item.id === 0) {
+                                            return <View style={{ width: 27, height: 27, backgroundColor: '#EFEFEF', borderRadius: 4, margin: 1 }} key={i} />
+                                        }
+                                        else {
+                                            return(
+                                                <Image 
+                                                    source={{ uri: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/data/items/icons2d/' + item.iconPath.toLowerCase(),
+                                                    width: 27, height: 27, cache: 'force-cache' }}
+                                                    style={{ borderRadius: 4, margin: 1 }}
+                                                    key={i}
+                                                />
+                                            )
+                                        }
+                                    })}
+                                </View>
                             </View>
                         </View>
                     </View>
